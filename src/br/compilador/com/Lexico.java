@@ -13,7 +13,7 @@ public class Lexico {
 		try {
 			fl = new FileLoader(filename);
 		} catch (FileNotFoundException e) {
-			errorH.registraErro();
+			errorH.registraErro(e.getMessage());
 		} 
 	}
 	
@@ -22,7 +22,7 @@ public class Lexico {
 		try {
 			c = fl.getNextChar();
 		} catch (IOException e) {
-			errorH.registraErro();
+			errorH.registraErro(e.getMessage());
 		}
 		
 		// elimina brancos
