@@ -19,18 +19,27 @@ public class Lexico {
 	
 	public Token nextToken() {
 		char c = ' ';
+		int state = 0;
+		
 		try {
-			c = fl.getNextChar();
+			// elimina brancos
+			while(true) {
+				switch (state) {
+				case 0:
+					c = fl.getNextChar();
+					break;
+				// ...
+				case 9:
+					
+				default:
+					break;
+				}
+			}
 		} catch (IOException e) {
 			errorH.registraErro(e.getMessage());
 		}
 		
-		// elimina brancos
-		switch (c) {
-		case '&':
-			
-			break;		
-		}
+		
 		return null;
 	}
 
