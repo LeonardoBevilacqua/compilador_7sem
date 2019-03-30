@@ -1,7 +1,7 @@
 package br.compilador.com;
 
 public enum TokenType {
-	EOF(0), 		//
+	EOF(0), 		// Fim do arquivo
 	NUM_INT(1), 	// 123,48, 3E+10
 	NUM_FLOAT(2), 	// 4.8, 3.10E+10
 	LITERAL(3), 	// “Carlos”, “Batata”
@@ -28,23 +28,23 @@ public enum TokenType {
 	DECLARE(24), 	// declare 
 	TO(25); 		// to
 	
-	private int cod;
+	private int codToken;
 
-	private TokenType(int cod){
-		this.cod = cod;
+	private TokenType(int codToken){
+		this.codToken = codToken;
 	}
 
-	public int getCod(){
-		return cod;
+	public int getCodToken(){
+		return codToken;
 	}
 	
-	public static TokenType toEnum(int cod){
+	public static TokenType toEnum(int codToken){
 		
 		for (TokenType tokenType : TokenType.values()){
-			if(cod == tokenType.getCod()) { return tokenType; }
+			if(codToken == tokenType.getCodToken()) { return tokenType; }
 		}
 		
-		throw new IllegalArgumentException("codigo invalido "+cod);
+		throw new IllegalArgumentException("codigo invalido "+codToken);
 	}
 
 }
