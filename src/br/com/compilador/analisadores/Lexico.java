@@ -36,8 +36,9 @@ public class Lexico {
 				}
 				
 				if(c == '+' || c == '-') {
-					lexema += c;
-					return new Token(TokenType.ARIT_AS, lexema, fl.getLine(), fl.getColumn());
+					return new Token(TokenType.ARIT_AS, Character.toString(c), fl.getLine(), fl.getColumn());
+				}else if(c == '*' || c == '/') {
+					return new Token(TokenType.ARIT_MD, Character.toString(c), fl.getLine(), fl.getColumn());
 				}
 				
 				switch (state) {
