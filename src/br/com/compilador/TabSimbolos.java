@@ -1,7 +1,10 @@
-package br.compilador.com;
+package br.com.compilador;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import br.com.compilador.token.Token;
+import br.com.compilador.token.TokenType;
 
 public class TabSimbolos {
 

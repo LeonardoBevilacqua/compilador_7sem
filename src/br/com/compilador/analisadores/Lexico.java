@@ -1,7 +1,12 @@
-package br.compilador.com;
+package br.com.compilador.analisadores;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import br.com.compilador.token.Token;
+import br.com.compilador.token.TokenType;
+import br.com.compilador.utils.ErrorHandler;
+import br.com.compilador.utils.FileLoader;
 
 public class Lexico {
 	

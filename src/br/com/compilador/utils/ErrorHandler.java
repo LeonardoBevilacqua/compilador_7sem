@@ -1,4 +1,4 @@
-package br.compilador.com;
+package br.com.compilador.utils;
 
 import java.util.ArrayList;
 import java.util.List;

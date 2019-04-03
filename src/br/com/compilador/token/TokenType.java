@@ -1,4 +1,4 @@
-package br.compilador.com;
+package br.com.compilador.token;
 
 public enum TokenType {
 	EOF(0), 		// Fim do arquivo

@@ -1,4 +1,9 @@
-package br.compilador.com;
+package br.com.compilador.analisadores;
+
+import br.com.compilador.TabSimbolos;
+import br.com.compilador.token.Token;
+import br.com.compilador.token.TokenType;
+import br.com.compilador.utils.ErrorHandler;
 
 public class Sintatico {
 	

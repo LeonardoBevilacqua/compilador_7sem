@@ -1,4 +1,4 @@
-package br.compilador.com;
+package br.com.compilador.token;
 
 public class Token {
 	private TokenType tokenType; // tipo de token

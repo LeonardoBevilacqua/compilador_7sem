@@ -2,7 +2,7 @@
  * Classe que implementa funcionalidades para manipulacao de arquivos.
  * @author Giulliano P. Carnielli
  */
-package br.compilador.com;
+package br.com.compilador.utils;
 
 import java.io.*;
 
