@@ -35,10 +35,15 @@ public class Lexico {
 					continue;
 				}
 				
+				/* ESSA SEQUENCIA DE IFs PODE SER TRANFORMADA EM UMA FUNÇAO, QUE
+				 * SERA RESPONSAVEL POR VERIFICAR MAQUINAS SIMPLES DE UM CARACTER
+				 */
 				if(c == '+' || c == '-') {
 					return new Token(TokenType.ARIT_AS, Character.toString(c), fl.getLine(), fl.getColumn());
 				}else if(c == '*' || c == '/') {
 					return new Token(TokenType.ARIT_MD, Character.toString(c), fl.getLine(), fl.getColumn());
+				}else if(c == ';') {
+					return new Token(TokenType.TERM, Character.toString(c), fl.getLine(), fl.getColumn());
 				}
 				
 				switch (state) {
