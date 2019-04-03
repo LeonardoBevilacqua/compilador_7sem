@@ -47,7 +47,7 @@ public class FileLoader extends BufferedReader {
         this.mark(1);
         int charValue = this.read();
         column++;
-        if (charValue == Character.LINE_SEPARATOR) {
+        if (charValue == '\n') { // -> Alterado para '\n' pois a forma antiga nao funcionava
             line++;
             lastLineSize = column;
             column = 0;

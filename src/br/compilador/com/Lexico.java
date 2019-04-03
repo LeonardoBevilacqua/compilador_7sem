@@ -19,14 +19,24 @@ public class Lexico {
 	
 	public Token nextToken() {
 		char c = ' ';
+		String lexema = "";
 		int state = 0;
 		
 		try {
 			// elimina brancos
 			while(true) {
+				c = fl.getNextChar();
+				if(Character.isWhitespace(c)) {
+					continue;
+				}
+				
+				if(c == '+' || c == '-') {
+					lexema += c;
+					return new Token(TokenType.ARIT_AS, lexema, fl.getLine(), fl.getColumn());
+				}
+				
 				switch (state) {
 				case 0:
-					c = fl.getNextChar();
 					if(c == '<') {
 						state = 1;
 					}else if(c == '=') {
@@ -61,12 +71,17 @@ public class Lexico {
 				}
 			}
 		} catch (IOException e) {
-			errorH.registraErro(e.getMessage());
+			//errorH.registraErro(e.getMessage());
+			return new Token(TokenType.EOF, lexema, fl.getLine(), fl.getColumn());
 		}
 		
 		
-		return null;
 	}
+	
+	private void verifica_relop() {
+		
+	}
+
 
 	private Token obter_token() {
 		// TODO Auto-generated method stub

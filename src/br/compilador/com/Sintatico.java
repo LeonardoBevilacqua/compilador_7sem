@@ -14,8 +14,8 @@ public class Sintatico {
 
 	public void processa() {
 		Token t;
-		//imprime cabeçalho
-		System.out.println("(X, Y)   |  Type  |  Lexema");
+		//imprime cabeÃ§alho
+		System.out.println("(X, Y)	|	Type	|	Lexema");
 		do {
 			t = lex.nextToken();
 			t.print();

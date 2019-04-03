@@ -5,7 +5,7 @@ public class Compilador {
 	public static void main(String[] args) {
 		if(args.length != 1) {
 			ErrorHandler errorH = ErrorHandler.getInstance();
-			errorH.registraErro("Arquivo invalido ou n„o existente");
+			errorH.registraErro("Arquivo invalido ou n√£o existente");
 			errorH.geraRelatorio();
 			return;
 		}
