@@ -44,6 +44,10 @@ public class Lexico {
 					return new Token(TokenType.ARIT_MD, Character.toString(c), fl.getLine(), fl.getColumn());
 				}else if(c == ';') {
 					return new Token(TokenType.TERM, Character.toString(c), fl.getLine(), fl.getColumn());
+				}else if(c == '(') {
+					return new Token(TokenType.L_PAR, Character.toString(c), fl.getLine(), fl.getColumn());
+				}else if(c == ')') {
+					return new Token(TokenType.R_PAR, Character.toString(c), fl.getLine(), fl.getColumn());
 				}
 				
 				switch (state) {
