@@ -13,8 +13,8 @@ public class Compilador {
 			return;
 		}
 		String filename = args[0];
-		Sintatico sint = new Sintatico(filename);
-		sint.processa();
+		Sintatico sintatico = new Sintatico(filename);
+		sintatico.processar();
 
 	}
 

@@ -7,26 +7,27 @@ import br.com.compilador.utils.ErrorHandler;
 
 public class Sintatico {
 	
-	private Lexico lex;
-	private TabSimbolos tab;
+	private Lexico lexico;
+	private TabSimbolos tabelaSimbolos;
 	private ErrorHandler errorH;
 
 	public Sintatico(String filename) {
-		lex = new Lexico(filename);
-		tab = TabSimbolos.getInstance();
+		lexico = new Lexico(filename);
+		tabelaSimbolos = TabSimbolos.getInstance();
 		errorH = ErrorHandler.getInstance();
 	}
 
-	public void processa() {
-		Token t;
+	public void processar() {
+		Token tokenLido;
 		//imprime cabeçalho
 		System.out.println("(X, Y)	|	Type	|	Lexema");
+		System.out.println("---------------------------------------");
 		do {
-			t = lex.nextToken();
-			t.print();
+			tokenLido = lexico.nextToken();
+			tokenLido.print();
 			
-		} while (t.getTokenType() != TokenType.EOF);
-		tab.printReport();
+		} while (tokenLido.getTokenType() != TokenType.EOF);
+		tabelaSimbolos.printReport();
 		errorH.geraRelatorio();
 		
 	}

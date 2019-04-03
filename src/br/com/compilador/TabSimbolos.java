@@ -65,7 +65,7 @@ public class TabSimbolos {
 		return instance;
 	}
 	
-	public void instalaToken(Token token) {
+	public void addToken(Token token) {
 		tab.put(token.getLexema(), token);
 	}
 	
