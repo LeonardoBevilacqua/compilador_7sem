@@ -12,6 +12,8 @@ public class Lexico {
 	
 	private FileLoader fl;
 	private ErrorHandler errorH;
+	private String lexema = "";
+	private TokenType tokenType = null;
 	
 	public Lexico(String filename) {
 		errorH = ErrorHandler.getInstance();
@@ -23,9 +25,11 @@ public class Lexico {
 	}
 	
 	public Token nextToken() {
-		char c = ' ';
-		String lexema = "";
+		char c = ' ';		
 		int state = 0;
+		
+		lexema = "";
+		tokenType = null;
 		
 		try {
 			// elimina brancos
@@ -35,20 +39,10 @@ public class Lexico {
 					continue;
 				}
 				
-				/* ESSA SEQUENCIA DE IFs PODE SER TRANFORMADA EM UMA FUNÇAO, QUE
-				 * SERA RESPONSAVEL POR VERIFICAR MAQUINAS SIMPLES DE UM CARACTER
-				 */
-				if(c == '+' || c == '-') {
-					return new Token(TokenType.ARIT_AS, Character.toString(c), fl.getLine(), fl.getColumn());
-				}else if(c == '*' || c == '/') {
-					return new Token(TokenType.ARIT_MD, Character.toString(c), fl.getLine(), fl.getColumn());
-				}else if(c == ';') {
-					return new Token(TokenType.TERM, Character.toString(c), fl.getLine(), fl.getColumn());
-				}else if(c == '(') {
-					return new Token(TokenType.L_PAR, Character.toString(c), fl.getLine(), fl.getColumn());
-				}else if(c == ')') {
-					return new Token(TokenType.R_PAR, Character.toString(c), fl.getLine(), fl.getColumn());
-				}
+				if(verifica_caracteres_simples(c)) {
+					return obter_token();
+				}				
+	
 				
 				switch (state) {
 				case 0:
@@ -89,8 +83,25 @@ public class Lexico {
 			//errorH.registraErro(e.getMessage());
 			return new Token(TokenType.EOF, lexema, fl.getLine(), fl.getColumn());
 		}
+	}
+	
+	private boolean verifica_caracteres_simples(char c) {	
+		if(c == '+' || c == '-') {
+			tokenType = TokenType.ARIT_AS;
+		}else if(c == '*' || c == '/') {
+			tokenType = TokenType.ARIT_MD;
+		}else if(c == ';') {
+			tokenType = TokenType.TERM;
+		}else if(c == '(') {
+			tokenType = TokenType.L_PAR;
+		}else if(c == ')') {
+			tokenType = TokenType.R_PAR;		
+		}else {
+			return false;
+		}
 		
-		
+		lexema += c;
+		return true;
 	}
 	
 	private void verifica_relop() {
@@ -99,8 +110,7 @@ public class Lexico {
 
 
 	private Token obter_token() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Token(tokenType, lexema, fl.getLine(), fl.getColumn());
 	}
 
 	private void instalarId() {
