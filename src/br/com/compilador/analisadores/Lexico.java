@@ -50,6 +50,69 @@ public class Lexico {
 					return new Token(TokenType.R_PAR, Character.toString(c), fl.getLine(), fl.getColumn());
 				}
 				
+				if(c == '$')
+				{
+					lexema += c;
+					c = fl.getNextChar();
+					if( c == 'l' | c == 'g' )
+					{
+						lexema += c;
+						c = fl.getNextChar();
+						if(c == 't' | c == 'e')
+						{
+							lexema += c;
+							return new Token(TokenType.RELOP, lexema, fl.getLine(), fl.getColumn());
+						}
+						else
+						{
+							lexema += c;
+							errorH.registraErro("lexema errado :"+ lexema);
+							lexema = "";
+						}
+					}
+					else if(c == 'e')
+					{
+						lexema += c;
+						c = fl.getNextChar();
+						if(c == 'q')
+						{
+							lexema += c;
+							return new Token(TokenType.RELOP, lexema, fl.getLine(), fl.getColumn());
+						}
+						else
+						{
+							lexema += c;
+							errorH.registraErro("lexema errado :"+ lexema);
+							lexema = "";
+						}
+					}
+					else if(c == 'd')
+					{
+						lexema += c;
+						c = fl.getNextChar();
+						if(c == 'f')
+						{
+							lexema += c;
+							return new Token(TokenType.RELOP, lexema, fl.getLine(), fl.getColumn());
+							
+						}
+						else
+						{
+							lexema += c;
+							errorH.registraErro("lexema errado :"+ lexema);
+							lexema = "";
+						}
+					}
+					else
+					{
+						lexema += c;
+						errorH.registraErro("lexema errado :"+ lexema);
+						lexema = "";
+					}
+					
+					
+				}
+				
 				switch (state) {
 				case 0:
 					if(c == '<') {
