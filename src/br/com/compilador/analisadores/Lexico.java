@@ -45,7 +45,13 @@ public class Lexico {
 					verifica_int_float();
 					return obter_token();
 					
-				} else if (verifica_caracteres_simples()) {
+				} 
+				else if(c == '$')
+				{
+					verificarRelop();
+					return obter_token();
+				}
+				else if (verifica_caracteres_simples()) {
 					return obter_token();
 				}
 
@@ -167,6 +173,72 @@ public class Lexico {
 			break;
 		}
 		return partida;
+	}
+	
+	private void verificarRelop() throws EOFException, IOException
+	{
+		if(c == '$')
+		{
+			lexema += c;
+			c = fl.getNextChar();
+			if( c == 'l' | c == 'g' )
+			{
+				lexema += c;
+				c = fl.getNextChar();
+				if(c == 't' | c == 'e')
+				{
+					lexema += c;
+					tokenType = TokenType.RELOP;
+				}
+				else
+				{
+					lexema += c;
+					errorH.registraErro("lexema errado :"+ lexema);
+					lexema = "";
+				}
+			}
+			else if(c == 'e')
+			{
+				lexema += c;
+				c = fl.getNextChar();
+				if(c == 'q')
+				{
+					lexema += c;
+					tokenType = TokenType.RELOP;
+				}
+				else
+				{
+					lexema += c;
+					errorH.registraErro("lexema errado :"+ lexema);
+					lexema = "";
+				}
+			}
+			else if(c == 'd')
+			{
+				lexema += c;
+				c = fl.getNextChar();
+				if(c == 'f')
+				{
+					lexema += c;
+					tokenType = TokenType.RELOP;
+					
+				}
+				else
+				{
+					lexema += c;
+					errorH.registraErro("lexema errado :"+ lexema);
+					lexema = "";
+				}
+			}
+			else
+			{
+				lexema += c;
+				errorH.registraErro("lexema errado :"+ lexema);
+				lexema = "";
+			}
+			
+			
+		}
 	}
 
 }

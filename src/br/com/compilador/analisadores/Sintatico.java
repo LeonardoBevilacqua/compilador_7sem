@@ -24,8 +24,8 @@ public class Sintatico {
 		System.out.println("---------------------------------------");
 		do {
 			tokenLido = lexico.nextToken();
-			tokenLido.print();
-			
+				tokenLido.print();
+				
 		} while (tokenLido.getTokenType() != TokenType.EOF);
 		tabelaSimbolos.printReport();
 		errorH.geraRelatorio();
