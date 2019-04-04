@@ -1,8 +1,10 @@
 package br.com.compilador.analisadores;
 
+import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import br.com.compilador.TabSimbolos;
 import br.com.compilador.token.Token;
 import br.com.compilador.token.TokenType;
 import br.com.compilador.utils.ErrorHandler;
@@ -12,6 +14,7 @@ public class Lexico {
 	
 	private FileLoader fl;
 	private ErrorHandler errorH;
+	private StringBuilder lexema = new StringBuilder();
 	
 	public Lexico(String filename) {
 		errorH = ErrorHandler.getInstance();
@@ -24,7 +27,7 @@ public class Lexico {
 	
 	public Token nextToken() {
 		char c = ' ';
-		String lexema = "";
+		lexema = new StringBuilder();
 		int state = 0;
 		
 		try {
@@ -38,6 +41,35 @@ public class Lexico {
 				/* ESSA SEQUENCIA DE IFs PODE SER TRANFORMADA EM UMA FUNÇAO, QUE
 				 * SERA RESPONSAVEL POR VERIFICAR MAQUINAS SIMPLES DE UM CARACTER
 				 */
+
+				if (Character.isLetter(c) || c == '_')
+				{
+					while(true) {
+						try {
+
+							if (Character.isLetter(c) || c == '_' ||
+									Character.isDigit(c))
+							{
+								lexema.append(c);
+								c = fl.getNextChar();
+							}
+							else
+							{
+								fl.resetLastChar();
+								return TabSimbolos.getInstance().addToken(lexema.toString(), fl.getLine(), fl.getColumn());
+
+							}
+						} catch (EOFException e) {
+							fl.resetLastChar();
+							return TabSimbolos.getInstance().addToken(lexema.toString(), fl.getLine(), fl.getColumn());
+
+						}
+					}
+
+
+				}
+
+
 				if(c == '+' || c == '-') {
 					return new Token(TokenType.ARIT_AS, Character.toString(c), fl.getLine(), fl.getColumn());
 				}else if(c == '*' || c == '/') {
@@ -87,7 +119,7 @@ public class Lexico {
 			}
 		} catch (IOException e) {
 			//errorH.registraErro(e.getMessage());
-			return new Token(TokenType.EOF, lexema, fl.getLine(), fl.getColumn());
+			return new Token(TokenType.EOF, lexema.toString(), fl.getLine(), fl.getColumn());
 		}
 		
 		

@@ -20,7 +20,7 @@ public class Sintatico {
 	public void processar() {
 		Token tokenLido;
 		//imprime cabeçalho
-		System.out.println("(X, Y)	|	Type	|	Lexema");
+		System.out.println("( X , Y )|      Token      ||      Lexema      |");
 		System.out.println("---------------------------------------");
 		do {
 			tokenLido = lexico.nextToken();
