@@ -6,7 +6,7 @@ import br.com.compilador.token.TokenType;
 import br.com.compilador.utils.ErrorHandler;
 
 public class Sintatico {
-	
+
 	private Lexico lexico;
 	private TabSimbolos tabelaSimbolos;
 	private ErrorHandler errorH;
@@ -19,17 +19,17 @@ public class Sintatico {
 
 	public void processar() {
 		Token tokenLido;
-		//imprime cabeçalho
+		// imprime cabeçalho
 		System.out.println("(X, Y)	|	Type	|	Lexema");
 		System.out.println("---------------------------------------");
 		do {
 			tokenLido = lexico.nextToken();
-				tokenLido.print();
-				
+			tokenLido.print();
+
 		} while (tokenLido.getTokenType() != TokenType.EOF);
 		tabelaSimbolos.printReport();
 		errorH.geraRelatorio();
-		
+
 	}
 
 }

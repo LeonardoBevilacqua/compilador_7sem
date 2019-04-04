@@ -21,8 +21,7 @@ public class Token {
 	}
 
 	public void print() {
-	//	System.out.println("("+this.linha+", "+ this.coluna+")	|	" + tokenType.toString() + "	|	" + this.lexema);
-		
+		System.out.println("("+this.linha+", "+ this.coluna+")	|	" + tokenType.toString() + "	|	" + this.lexema);		
 	}
 
 	public TokenType getTokenType() {
