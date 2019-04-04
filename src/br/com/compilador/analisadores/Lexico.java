@@ -15,6 +15,8 @@ public class Lexico {
 	private ErrorHandler errorH;
 	private String lexema = "";
 	private TokenType tokenType = null;
+	private char c = ' ';
+	private long coluna_inicial;
 
 	public Lexico(String filename) {
 		errorH = ErrorHandler.getInstance();
@@ -26,29 +28,87 @@ public class Lexico {
 	}
 
 	public Token nextToken() {
-		char c = ' ';
-
+		c = ' ';
 		lexema = "";
 		tokenType = null;
+		coluna_inicial = 1;
 
 		try {
+			
 			do {
 				c = fl.getNextChar();
-			} while (Character.isWhitespace(c));			
-		} catch (IOException e) {			
+				if(lexema == "") {
+					coluna_inicial = fl.getColumn();
+				}
+
+				if (Character.isDigit(c)) {
+					verifica_int_float();
+					return obter_token();
+					
+				} else if (verifica_caracteres_simples()) {
+					return obter_token();
+				}
+
+			} while (Character.isWhitespace(c));
+		} catch (IOException e) {
+			if (lexema != "") {
+				try {
+					fl.resetLastChar();
+				} catch (IOException e1) {
+					// erro
+				}
+				return obter_token();
+			}
 			return new Token(TokenType.EOF, "", fl.getLine(), fl.getColumn());
 		}
-		
-		if (Character.isDigit(c)) {
-			verifica_float_int(c);
-		}else if (verifica_caracteres_simples(c)) {
-			return obter_token();
-		}
-		
+
 		return null;
 	}
 
-	private boolean verifica_caracteres_simples(char c) {
+	/**
+	 * This function verifies what type of number will get
+	 * and generate the save the token
+	 * @throws EOFException
+	 * @throws IOException
+	 */
+	private void verifica_int_float() throws EOFException, IOException {
+		tokenType = TokenType.NUM_INT;
+
+		do {			
+			lexema += c;			
+			c = fl.getNextChar();			
+		} while (Character.isDigit(c));
+		
+		if (c == '.') {
+			verifica_float();
+		} else if (c == 'E' || c == 'e') {
+			verifica_notacao();
+		}
+		
+
+		fl.resetLastChar();
+	}
+	
+	private void verifica_float() throws EOFException, IOException {
+		tokenType = TokenType.NUM_FLOAT;
+		do {			
+			lexema += c;
+			c = fl.getNextChar();
+		} while (Character.isDigit(c));		
+		
+		if (c == 'E' || c == 'e') {
+			verifica_notacao();
+		}		
+	}
+
+	private void verifica_notacao() throws EOFException, IOException {
+		do {
+			lexema += c;
+			c = fl.getNextChar();
+		} while (Character.isDigit(c) || (c == '+' || c == '-'));
+	}
+	
+	private boolean verifica_caracteres_simples() {
 		if (c == '+' || c == '-') {
 			tokenType = TokenType.ARIT_AS;
 		} else if (c == '*' || c == '/') {
@@ -67,22 +127,7 @@ public class Lexico {
 		return true;
 	}
 
-	private boolean verifica_float_int(char c) {
-		if (!Character.isDigit(c) && c != 'E' && c != '.') {
-			return false;
-		}
-
-		if (tokenType == null) {
-			tokenType = TokenType.NUM_INT;
-		}
-
-		if (c == '.') {
-			tokenType = TokenType.NUM_FLOAT;
-		}
-		lexema += c;
-
-		return true;
-	}
+	
 
 	private void verifica_relop() {
 
@@ -90,7 +135,7 @@ public class Lexico {
 
 	private Token obter_token() {
 		// reavaliar linha e coluna
-		return new Token(tokenType, lexema, fl.getLine(), fl.getColumn());
+		return new Token(tokenType, lexema, fl.getLine(), coluna_inicial);
 	}
 
 	private void instalarId() {
