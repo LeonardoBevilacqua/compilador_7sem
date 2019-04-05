@@ -21,7 +21,9 @@ public class Token {
 	}
 
 	public void print() {
-		System.out.println("("+this.linha+", "+ this.coluna+")	|	" + tokenType.toString() + "	|	" + this.lexema);
+
+		String formatTokens = "(%3s,%3s)| %-15s || %-16s |\n";
+		System.out.printf(formatTokens,this.linha, this.coluna, tokenType.toString(), this.lexema);
 		
 	}
 
@@ -31,6 +33,22 @@ public class Token {
 
 	public String getLexema() {
 		return this.lexema;
+	}
+
+	public long getLinha() {
+		return this.linha;
+	}
+
+	public long getColuna() {
+		return this.coluna;
+	}
+
+	public void setLinha(long linha) {
+		this.linha = linha;
+	}
+
+	public void setColuna(long coluna) {
+		this.coluna = coluna;
 	}
 
 }
