@@ -6,7 +6,7 @@ import br.com.compilador.token.TokenType;
 import br.com.compilador.utils.ErrorHandler;
 
 public class Sintatico {
-	
+
 	private Lexico lexico;
 	private TabSimbolos tabelaSimbolos;
 	private ErrorHandler errorH;
@@ -25,11 +25,11 @@ public class Sintatico {
 		do {
 			tokenLido = lexico.nextToken();
 			tokenLido.print();
-			
+
 		} while (tokenLido.getTokenType() != TokenType.EOF);
 		tabelaSimbolos.printReport();
 		errorH.geraRelatorio();
-		
+
 	}
 
 }

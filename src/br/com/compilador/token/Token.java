@@ -21,10 +21,9 @@ public class Token {
 	}
 
 	public void print() {
-
 		String formatTokens = "(%3s,%3s)| %-15s || %-16s |\n";
-		System.out.printf(formatTokens,this.linha, this.coluna, tokenType.toString(), this.lexema);
-		
+		System.out.printf(formatTokens,this.linha, this.coluna, tokenType.toString(), this.lexema);	
+
 	}
 
 	public TokenType getTokenType() {

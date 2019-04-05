@@ -36,19 +36,22 @@ public class Lexico {
 		coluna_inicial = 1;
 
 		try {
-			
 			do {
 				c = fl.getNextChar();
-				if(lexema == "") {
+				if (lexema == "") {
 					coluna_inicial = fl.getColumn();
 				}
 
 				if (Character.isDigit(c)) {
-					verifica_int_float();
-					return obter_token();
-					
+					if (verifica_int_float()) {
+						break;
+					}
+				} else if (c == '$') {
+					if(verificarRelop()) {
+						break;
+					}
 				} else if (verifica_caracteres_simples()) {
-					return obter_token();
+					break;
 				}
 
 			} while (Character.isWhitespace(c));
@@ -64,52 +67,68 @@ public class Lexico {
 			return new Token(TokenType.EOF, "", fl.getLine(), fl.getColumn());
 		}
 
-		return null;
+		return obter_token();
 	}
 
 	/**
-	 * This function verifies what type of number will get
-	 * and generate the save the token
+	 * This function verifies what type of number will get and generate the save the
+	 * token
+	 * 
 	 * @throws EOFException
 	 * @throws IOException
 	 */
-	private void verifica_int_float() throws EOFException, IOException {
+	private boolean verifica_int_float() throws EOFException, IOException {
 		tokenType = TokenType.NUM_INT;
 
-		do {			
-			lexema += c;			
-			c = fl.getNextChar();			
-		} while (Character.isDigit(c));
-		
-		if (c == '.') {
-			verifica_float();
-		} else if (c == 'E' || c == 'e') {
-			verifica_notacao();
-		}
-		
-
-		fl.resetLastChar();
-	}
-	
-	private void verifica_float() throws EOFException, IOException {
-		tokenType = TokenType.NUM_FLOAT;
-		do {			
+		do {
 			lexema += c;
 			c = fl.getNextChar();
-		} while (Character.isDigit(c));		
-		
-		if (c == 'E' || c == 'e') {
-			verifica_notacao();
-		}		
+		} while (Character.isDigit(c));
+
+		if (c == '.') {
+			if (!verifica_float()) {
+				return false;
+			}
+		} else if (c == 'E' || c == 'e') {
+			if (!verifica_notacao()) {
+				return false;
+			}
+		} else if (!Character.isWhitespace(c)) {
+			return false;
+		}
+		fl.resetLastChar();
+
+		return true;
 	}
 
-	private void verifica_notacao() throws EOFException, IOException {
+	private boolean verifica_float() throws EOFException, IOException {
+		tokenType = TokenType.NUM_FLOAT;
+		do {
+			lexema += c;
+			c = fl.getNextChar();
+		} while (Character.isDigit(c));
+
+		if (c == 'E' || c == 'e') {
+			verifica_notacao();
+		} else if (!Character.isWhitespace(c)) {
+			return false;
+		}
+
+		return true;
+	}
+
+	private boolean verifica_notacao() throws EOFException, IOException {
 		do {
 			lexema += c;
 			c = fl.getNextChar();
 		} while (Character.isDigit(c) || (c == '+' || c == '-'));
+		if (!Character.isWhitespace(c)) {
+			return false;
+		}
+
+		return true;
 	}
-	
+
 	private boolean verifica_caracteres_simples() {
 		if (c == '+' || c == '-') {
 			tokenType = TokenType.ARIT_AS;
@@ -127,12 +146,6 @@ public class Lexico {
 
 		lexema += c;
 		return true;
-	}
-
-	
-
-	private void verifica_relop() {
-
 	}
 
 	private Token obter_token() {
@@ -169,6 +182,57 @@ public class Lexico {
 			break;
 		}
 		return partida;
+	}
+
+	private boolean verificarRelop() throws EOFException, IOException {
+		lexema += c;
+		c = fl.getNextChar();
+		if (c == 'l' | c == 'g') {
+			lexema += c;
+			c = fl.getNextChar();
+			if (c == 't' | c == 'e') {
+				lexema += c;
+				tokenType = TokenType.RELOP;
+			} else {
+				lexema += c;
+				errorH.registraErro("lexema errado :" + lexema);
+				lexema = "";
+				return false;
+			}
+		} else if (c == 'e') {
+			lexema += c;
+			c = fl.getNextChar();
+			if (c == 'q') {
+				lexema += c;
+				tokenType = TokenType.RELOP;
+			} else {
+				lexema += c;
+				errorH.registraErro("lexema errado :" + lexema);
+				lexema = "";
+				return false;
+			}
+		} else if (c == 'd') {
+			lexema += c;
+			c = fl.getNextChar();
+			if (c == 'f') {
+				lexema += c;
+				tokenType = TokenType.RELOP;
+
+			} else {
+				lexema += c;
+				errorH.registraErro("lexema errado :" + lexema);
+				lexema = "";
+				return false;
+			}
+		} else {
+			lexema += c;
+			errorH.registraErro("lexema errado :" + lexema);
+			lexema = "";
+			fl.resetLastChar();
+			return false;
+		}
+
+		return true;
 	}
 
 }
