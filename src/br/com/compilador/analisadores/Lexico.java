@@ -4,6 +4,7 @@ import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import br.com.compilador.TabSimbolos;
 import br.com.compilador.token.Token;
 import br.com.compilador.token.TokenType;
 import br.com.compilador.utils.ErrorHandler;
@@ -13,7 +14,8 @@ public class Lexico {
 
 	private FileLoader fl;
 	private ErrorHandler errorH;
-	private String lexema = "";
+
+	private StringBuilder lexema = new StringBuilder();
 	private TokenType tokenType = null;
 	private char c = ' ';
 	private long coluna_inicial;
@@ -28,8 +30,8 @@ public class Lexico {
 	}
 
 	public Token nextToken() {
+		lexema = new StringBuilder();
 		c = ' ';
-		lexema = "";
 		tokenType = null;
 		coluna_inicial = 1;
 

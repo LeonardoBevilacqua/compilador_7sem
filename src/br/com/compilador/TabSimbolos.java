@@ -65,8 +65,19 @@ public class TabSimbolos {
 		return instance;
 	}
 	
-	public void addToken(Token token) {
-		tab.put(token.getLexema(), token);
+	public Token addToken(String lexema, long linha, long coluna) {
+		Token token = null;
+
+		if (tab.containsKey(lexema)) {
+			token = tab.get(lexema);
+			token.setLinha(linha);
+			token.setColuna(coluna);
+		} else {
+			token = new Token(TokenType.ID, lexema, linha, coluna);
+			tab.put(token.getLexema(), token);
+		}
+
+		return token;
 	}
 	
 	public void printReport() {
