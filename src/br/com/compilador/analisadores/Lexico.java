@@ -53,6 +53,8 @@ public class Lexico {
                     return verificarRelop();
                 } else if (c == '"') {
                     return verificaLiteral();
+                } else if (c == '<') {
+                    return verificaAssign();
                 } else if (verifica_caracteres_simples()) {
                     break;
                 }
@@ -253,6 +255,27 @@ public class Lexico {
                 errorH.registraErro("lexema errado :" + lexema + " | Linha: " + fl.getLine() + " | Coluna " + coluna_inicial);
                 break;
             }
+        }
+        return tk;
+    }
+
+    private Token verificaAssign() throws IOException {
+        Token tk = null;
+
+        try {
+            next_character();
+            if (c == '-') {
+                lexema.append(c);
+                tokenType = TokenType.ASSIGN;
+                tk = new Token(tokenType, lexema.toString(), fl.getLine(), coluna_inicial);
+            } else {
+                fl.resetLastChar();
+                errorH.registraErro("lexema errado :" + lexema + " | Linha: " + fl.getLine() + " | Coluna " + coluna_inicial);
+            }
+
+        } catch (IOException e) {
+            fl.resetLastChar();
+            errorH.registraErro("lexema errado :" + lexema + " | Linha: " + fl.getLine() + " | Coluna " + coluna_inicial);
         }
         return tk;
     }
