@@ -8,8 +8,8 @@ public class Compilador {
 	public static void main(String[] args) {
 		if(args.length != 1) {
 			ErrorHandler errorH = ErrorHandler.getInstance();
-			errorH.registraErro("Arquivo invalido ou não existente");
-			errorH.geraRelatorio();
+			errorH.registrarErroGenerico("Arquivo invalido ou não existente");
+			errorH.gerarRelatorioGenerico();
 			return;
 		}
 		String filename = args[0];

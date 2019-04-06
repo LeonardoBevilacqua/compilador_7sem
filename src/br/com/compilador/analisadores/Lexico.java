@@ -26,7 +26,7 @@ public class Lexico
 		errorHandler = ErrorHandler.getInstance();
 		
 		try 							{ fileLoader = new FileLoader(filename); }
-		catch (FileNotFoundException e) { errorHandler.registraErro(e.getMessage()); }
+		catch (FileNotFoundException e) { errorHandler.registrarErroGenerico(e.getMessage()); }
 	}
 	
 	public Token nextToken()
@@ -156,7 +156,7 @@ public class Lexico
 			else
 			{
 				addCaractereLexema();
-				errorHandler.registraErro(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+				errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
 				lexema.setLength(0);
 				fileLoader.resetLastChar();
 			}
@@ -173,7 +173,7 @@ public class Lexico
 			else
 			{
 				addCaractereLexema();
-				errorHandler.registraErro(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+				errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
 				lexema.setLength(0);
 				fileLoader.resetLastChar();
 			}
@@ -190,7 +190,7 @@ public class Lexico
 			else
 			{
 				addCaractereLexema();
-				errorHandler.registraErro(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+				errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
 				lexema.setLength(0);
 				fileLoader.resetLastChar();
 			}
@@ -198,7 +198,7 @@ public class Lexico
 		else
 		{
 			addCaractereLexema();
-			errorHandler.registraErro(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+			errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
 			lexema.setLength(0);
 			fileLoader.resetLastChar();
 		}
