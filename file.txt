@@ -1,1 +1,19 @@
+$lt variavel_ID $l if(10+1-0);
 (1+2) $gt 3.1e+12
+true false
+and not or
+bool text int
+program
+end prog
+begin
+end
+if
+then
+else
+for
+while
+declare
+to
+"teste_$ Literal"
+<
+<-

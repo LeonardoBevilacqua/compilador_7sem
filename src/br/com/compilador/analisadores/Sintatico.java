@@ -23,6 +23,7 @@ public class Sintatico {
 		System.out.println("( X , Y )|      Token      ||      Lexema      |");
 		System.out.println("---------------------------------------");
 		do {
+
 			tokenLido = lexico.nextToken();
 			tokenLido.print();
 
