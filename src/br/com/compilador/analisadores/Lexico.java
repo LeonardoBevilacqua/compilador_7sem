@@ -13,7 +13,8 @@ public class Lexico {
 
 	private FileLoader fl;
 	private ErrorHandler errorH;
-	private String lexema = "";
+
+	private StringBuilder lexema = new StringBuilder();
 	private TokenType tokenType = null;
 	private char c = ' ';
 	private long coluna_inicial;
@@ -28,30 +29,33 @@ public class Lexico {
 	}
 
 	public Token nextToken() {
+		lexema = new StringBuilder();
 		c = ' ';
-		lexema = "";
 		tokenType = null;
 		coluna_inicial = 1;
 
 		try {
-			
 			do {
 				c = fl.getNextChar();
-				if(lexema == "") {
+				if (lexema.length() == 0) {
 					coluna_inicial = fl.getColumn();
 				}
 
 				if (Character.isDigit(c)) {
-					verifica_int_float();
-					return obter_token();
-					
+					if (verifica_int_float()) {
+						break;
+					}
+				} else if (c == '$') {
+					if (verificarRelop()) {
+						break;
+					}
 				} else if (verifica_caracteres_simples()) {
-					return obter_token();
+					break;
 				}
 
 			} while (Character.isWhitespace(c));
 		} catch (IOException e) {
-			if (lexema != "") {
+			if (lexema.length() != 0) {
 				try {
 					fl.resetLastChar();
 				} catch (IOException e1) {
@@ -62,53 +66,76 @@ public class Lexico {
 			return new Token(TokenType.EOF, "", fl.getLine(), fl.getColumn());
 		}
 
-		return null;
+		return obter_token();
 	}
 
 	/**
-	 * This function verifies what type of number will get
-	 * and generate the save the token
+	 * This function verifies what type of number will get and generate the save the
+	 * token
+	 * 
 	 * @throws EOFException
 	 * @throws IOException
 	 */
-	private void verifica_int_float() throws EOFException, IOException {
+	private boolean verifica_int_float() throws EOFException, IOException {
 		tokenType = TokenType.NUM_INT;
 
-		do {			
-			lexema += c;			
-			c = fl.getNextChar();			
+		do {
+			next_character();
 		} while (Character.isDigit(c));
-		
-		if (c == '.') {
-			verifica_float();
-		} else if (c == 'E' || c == 'e') {
-			verifica_notacao();
-		}
-		
 
+		if (c == '.') {
+			if (!verifica_float()) {
+				fl.resetLastChar();
+				return false;
+			}
+		} else if (c == 'E' || c == 'e') {
+			if (!verifica_notacao()) {
+				fl.resetLastChar();
+				return false;
+			}
+		} else if (!Character.isWhitespace(c)) {
+			fl.resetLastChar();
+			return false;
+		}
 		fl.resetLastChar();
+
+		return true;
 	}
-	
-	private void verifica_float() throws EOFException, IOException {
+
+	private void next_character() throws EOFException, IOException {
+		lexema.append(c);
+		c = fl.getNextChar();
+	}
+
+	private boolean verifica_float() throws EOFException, IOException {
 		tokenType = TokenType.NUM_FLOAT;
-		do {			
-			lexema += c;
-			c = fl.getNextChar();
-		} while (Character.isDigit(c));		
-		
+		do {
+			next_character();
+		} while (Character.isDigit(c));
+
 		if (c == 'E' || c == 'e') {
 			verifica_notacao();
-		}		
+		} else if (!Character.isWhitespace(c)) {
+			fl.resetLastChar();
+			return false;
+		}
+
+		return true;
 	}
 
-	private void verifica_notacao() throws EOFException, IOException {
+	private boolean verifica_notacao() throws EOFException, IOException { 
 		do {
-			lexema += c;
-			c = fl.getNextChar();
+			next_character();
 		} while (Character.isDigit(c) || (c == '+' || c == '-'));
+		if (!Character.isWhitespace(c)) {
+			fl.resetLastChar();
+			return false;
+		}
+
+		return true;
 	}
-	
-	private boolean verifica_caracteres_simples() {
+
+	private boolean verifica_caracteres_simples() throws IOException {
 		if (c == '+' || c == '-') {
 			tokenType = TokenType.ARIT_AS;
 		} else if (c == '*' || c == '/') {
@@ -120,53 +147,66 @@ public class Lexico {
 		} else if (c == ')') {
 			tokenType = TokenType.R_PAR;
 		} else {
+			//fl.resetLastChar();
 			return false;
 		}
 
-		lexema += c;
+		lexema.append(c);
 		return true;
 	}
 
-	
-
-	private void verifica_relop() {
-
-	}
-
 	private Token obter_token() {
-		// reavaliar linha e coluna
-		return new Token(tokenType, lexema, fl.getLine(), coluna_inicial);
+		return new Token(tokenType, lexema.toString(), fl.getLine(), coluna_inicial);
 	}
 
-	private void instalarId() {
-		// TODO Auto-generated method stub
+	private boolean verificarRelop() throws EOFException, IOException {
+		next_character();
+		if (c == 'l' | c == 'g') {
+			next_character();
+			if (c == 't' | c == 'e') {
+				lexema.append(c);
+				tokenType = TokenType.RELOP;
+			} else {
+				lexema.append(c);
+				errorH.registraErro("lexema errado :" + lexema);
+				lexema.setLength(0);
+				fl.resetLastChar();
+				return false;
+			}
+		} else if (c == 'e') {
+			next_character();
+			if (c == 'q') {
+				lexema.append(c);
+				tokenType = TokenType.RELOP;
+			} else {
+				lexema.append(c);
+				errorH.registraErro("lexema errado :" + lexema);
+				lexema.setLength(0);
+				fl.resetLastChar();
+				return false;
+			}
+		} else if (c == 'd') {
+			next_character();
+			if (c == 'f') {
+				lexema.append(c);
+				tokenType = TokenType.RELOP;
 
-	}
-
-	private void retrair(int i) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/**
-	 * Em caso de falha, deve retornar o estado para iniciar a analise da proxima
-	 * maquina
-	 * 
-	 * @param partida
-	 * @return O estado
-	 */
-	private int falhar(int partida) {
-		long pt_adiante = fl.getColumn();
-		switch (partida) {
-		case 12:
-			partida = 20;
-			break;
-
-		default:
-			// erro lexico
-			break;
+			} else {
+				lexema.append(c);
+				errorH.registraErro("lexema errado :" + lexema);
+				lexema.setLength(0);
+				fl.resetLastChar();
+				return false;
+			}
+		} else {
+			lexema.append(c);
+			errorH.registraErro("lexema errado :" + lexema);
+			lexema.setLength(0);
+			fl.resetLastChar();
+			return false;
 		}
-		return partida;
+
+		return true;
 	}
 
 }
