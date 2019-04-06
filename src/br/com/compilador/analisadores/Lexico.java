@@ -51,6 +51,8 @@ public class Lexico {
                     }
                 } else if (c == '$') {
                     return verificarRelop();
+                } else if (c == '"') {
+                    return verificaLiteral();
                 } else if (verifica_caracteres_simples()) {
                     break;
                 }
@@ -149,6 +151,7 @@ public class Lexico {
             tokenType = TokenType.L_PAR;
         } else if (c == ')') {
             tokenType = TokenType.R_PAR;
+
         } else {
             //fl.resetLastChar();
             return false;
@@ -224,6 +227,30 @@ public class Lexico {
             } catch (EOFException e) {
                 fl.resetLastChar();
                 tk = TabSimbolos.getInstance().addToken(lexema.toString(), fl.getLine(), coluna_inicial);
+                break;
+            }
+        }
+        return tk;
+    }
+
+    private Token verificaLiteral() throws IOException {
+        Token tk = null;
+
+        lexema.append(c);
+        while (true) {
+            try {
+                c = fl.getNextChar();
+                if (c != '"') {
+                    lexema.append(c);
+                } else {
+                    lexema.append(c);
+                    tokenType = TokenType.LITERAL;
+                    tk = new Token(tokenType, lexema.toString(), fl.getLine(), coluna_inicial);
+                    break;
+                }
+            } catch (IOException e) {
+                fl.resetLastChar();
+                errorH.registraErro("lexema errado :" + lexema + " | Linha: " + fl.getLine() + " | Coluna " + coluna_inicial);
                 break;
             }
         }

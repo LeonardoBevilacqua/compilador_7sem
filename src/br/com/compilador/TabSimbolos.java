@@ -74,7 +74,6 @@ public class TabSimbolos {
 			token.setColuna(coluna);
 		} else {
 			token = new Token(TokenType.ID, lexema, linha, coluna);
-			tab.put(token.getLexema(), token);
 		}
 
 		return token;
