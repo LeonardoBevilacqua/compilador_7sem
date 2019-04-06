@@ -85,13 +85,16 @@ public class Lexico {
 
 		if (c == '.') {
 			if (!verifica_float()) {
+				fl.resetLastChar();
 				return false;
 			}
 		} else if (c == 'E' || c == 'e') {
 			if (!verifica_notacao()) {
+				fl.resetLastChar();
 				return false;
 			}
 		} else if (!Character.isWhitespace(c)) {
+			fl.resetLastChar();
 			return false;
 		}
 		fl.resetLastChar();
@@ -113,24 +116,26 @@ public class Lexico {
 		if (c == 'E' || c == 'e') {
 			verifica_notacao();
 		} else if (!Character.isWhitespace(c)) {
+			fl.resetLastChar();
 			return false;
 		}
 
 		return true;
 	}
 
-	private boolean verifica_notacao() throws EOFException, IOException {
+	private boolean verifica_notacao() throws EOFException, IOException { 
 		do {
 			next_character();
 		} while (Character.isDigit(c) || (c == '+' || c == '-'));
 		if (!Character.isWhitespace(c)) {
+			fl.resetLastChar();
 			return false;
 		}
 
 		return true;
 	}
 
-	private boolean verifica_caracteres_simples() {
+	private boolean verifica_caracteres_simples() throws IOException {
 		if (c == '+' || c == '-') {
 			tokenType = TokenType.ARIT_AS;
 		} else if (c == '*' || c == '/') {
@@ -142,6 +147,7 @@ public class Lexico {
 		} else if (c == ')') {
 			tokenType = TokenType.R_PAR;
 		} else {
+			//fl.resetLastChar();
 			return false;
 		}
 
@@ -164,6 +170,7 @@ public class Lexico {
 				lexema.append(c);
 				errorH.registraErro("lexema errado :" + lexema);
 				lexema.setLength(0);
+				fl.resetLastChar();
 				return false;
 			}
 		} else if (c == 'e') {
@@ -175,6 +182,7 @@ public class Lexico {
 				lexema.append(c);
 				errorH.registraErro("lexema errado :" + lexema);
 				lexema.setLength(0);
+				fl.resetLastChar();
 				return false;
 			}
 		} else if (c == 'd') {
@@ -187,6 +195,7 @@ public class Lexico {
 				lexema.append(c);
 				errorH.registraErro("lexema errado :" + lexema);
 				lexema.setLength(0);
+				fl.resetLastChar();
 				return false;
 			}
 		} else {
