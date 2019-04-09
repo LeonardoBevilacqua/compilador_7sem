@@ -205,6 +205,9 @@ public class Lexico {
                     errorH.registraErro("lexema errado :" + lexema + " | Linha: " + fl.getLine() + " | Coluna " + coluna_inicial);
                 }
 
+            } else {
+                fl.resetLastChar();
+                errorH.registraErro("lexema errado :" + lexema + " | Linha: " + fl.getLine() + " | Coluna " + coluna_inicial);
             }
         } catch (IOException e) {
             fl.resetLastChar();
