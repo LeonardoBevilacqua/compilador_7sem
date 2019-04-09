@@ -44,7 +44,7 @@ public class Lexico
 				if (lexema.length() == 0) { coluna_inicial = fileLoader.getColumn(); }
 				
 				caracterLido = fileLoader.getNextChar();
-				addCaractereLexema();
+				
 				
 				if (Character.isLetter(caracterLido) || caracterLido == '_')	{ tokenDeRetorno = obterID(); }
 				else if (Character.isDigit(caracterLido))						{ tokenDeRetorno = obterIntOrFloat(); }
@@ -72,8 +72,10 @@ public class Lexico
         Token token = null;
         try
 		{
+        	addCaractereLexema();
         	while (token == null)
 			{
+        		
         		caracterLido = fileLoader.getNextChar();
         		if (Character.isLetter(caracterLido) || caracterLido == '_' || Character.isDigit(caracterLido))
                 {
@@ -117,15 +119,28 @@ public class Lexico
 	
 	private Token obterNumFloat() throws EOFException, IOException
 	{
-		do {
-			addCaractereLexema();
-			caracterLido = fileLoader.getNextChar();
-		} while (Character.isDigit(caracterLido));
-
-		if (caracterLido == 'E' || caracterLido == 'e') { return obterNotacao(TokenType.NUM_FLOAT); }
-		else if (!Character.isWhitespace(caracterLido)) { fileLoader.resetLastChar(); }
-		else 											{ return new Token(TokenType.NUM_FLOAT, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn()); }
-
+		try
+		{
+			do {
+				addCaractereLexema();
+				caracterLido = fileLoader.getNextChar();
+			} while (Character.isDigit(caracterLido));
+	
+			if (caracterLido == 'E' || caracterLido == 'e') { return obterNotacao(TokenType.NUM_FLOAT); }
+			else if (!Character.isWhitespace(caracterLido))
+			{ 
+				addCaractereLexema();
+				errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+				return null;
+			}
+			
+			return new Token(TokenType.NUM_FLOAT, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+		}
+		catch(EOFException e)
+		{
+			fileLoader.resetLastChar();
+        	errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+		}
 		return null;
 	}
 
@@ -145,6 +160,7 @@ public class Lexico
 	{
 		try
 		{
+			addCaractereLexema();
 			caracterLido = fileLoader.getNextChar();
 			if (caracterLido == 'l' | caracterLido == 'g')
 			{
@@ -218,6 +234,7 @@ public class Lexico
 		Token token = null;
         try
 		{
+        	addCaractereLexema();
         	while (token == null)
 			{
         		caracterLido = fileLoader.getNextChar();
@@ -242,6 +259,7 @@ public class Lexico
 		Token token = null;
 	    try
 		{
+	    	addCaractereLexema();
 			caracterLido = fileLoader.getNextChar();
 			if (caracterLido == '-')
 	        {
@@ -266,6 +284,7 @@ public class Lexico
 	private Token obterCaracterSimples() throws IOException
 	{
 		TokenType tokenType = null;
+		addCaractereLexema();
 		if (caracterLido == '+' || caracterLido == '-') 		{ tokenType = TokenType.ARIT_AS; }
 		else if (caracterLido == '*' || caracterLido == '/') 	{ tokenType = TokenType.ARIT_MD; } 
 		else if (caracterLido == ';') 							{ tokenType = TokenType.TERM; } 

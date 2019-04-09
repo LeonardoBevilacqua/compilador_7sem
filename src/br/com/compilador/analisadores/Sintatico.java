@@ -26,11 +26,6 @@ public class Sintatico {
 		do {
 
 			tokenLido = lexico.nextToken();
-
-			while(tokenLido == null || tokenLido.getTokenType() == null){
-				tokenLido = lexico.nextToken();
-			}
-
 			tokenLido.print();
 
 		} while (tokenLido.getTokenType() != TokenType.EOF);
