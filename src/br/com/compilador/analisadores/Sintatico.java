@@ -19,10 +19,12 @@ public class Sintatico {
 
 	public void processar() {
 		Token tokenLido;
-		//imprime cabeçalho
-		System.out.println("( X , Y )|      Token      ||      Lexema      |");
-		System.out.println("---------------------------------------");
+		
+		System.out.println("------------------------------------------------");
+		System.out.println("( X , Y )|   Token    ||          Lexema       |");
+		System.out.println("------------------------------------------------");
 		do {
+
 			tokenLido = lexico.nextToken();
 
 			while(tokenLido == null || tokenLido.getTokenType() == null){
@@ -32,8 +34,10 @@ public class Sintatico {
 			tokenLido.print();
 
 		} while (tokenLido.getTokenType() != TokenType.EOF);
+		System.out.println("------------------------------------------------");
 		tabelaSimbolos.printReport();
-		errorH.geraRelatorio();
+		errorH.gerarRelatorioLexico();
+		errorH.gerarRelatorioGenerico();
 
 	}
 

@@ -21,3 +21,32 @@ to
 "teste_$ Literal"
 <
 <-
+$lt variavel_ID marcelo teste_variavel $l if(10+1-0);
+(1+2) $gt 3.1e+12
+true false
+and not or
+bool text int
+program
+end prog
+begin
+end
+if
+then
+else
+for
+while
+declare
+to
+"teste_$ Literal"
+<
+<-
+
+$lt $gt$ge
+ $le
+$eq 
+$df
+
+$l $g$ge
+ $l
+$eqa 
+$dj
