@@ -143,15 +143,59 @@ public class Lexico
 	
 	private Token obterRelop() throws EOFException, IOException
 	{
-		caracterLido = fileLoader.getNextChar();
-		if (caracterLido == 'l' | caracterLido == 'g')
+		try
 		{
-			addCaractereLexema();
 			caracterLido = fileLoader.getNextChar();
-			if (caracterLido == 't' | caracterLido == 'e')
+			if (caracterLido == 'l' | caracterLido == 'g')
 			{
 				addCaractereLexema();
-				return new Token(TokenType.RELOP, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+				caracterLido = fileLoader.getNextChar();
+				if (caracterLido == 't' | caracterLido == 'e')
+				{
+					addCaractereLexema();
+					return new Token(TokenType.RELOP, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+				}
+				else
+				{
+					addCaractereLexema();
+					errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+					lexema.setLength(0);
+					fileLoader.resetLastChar();
+				}
+			}
+			else if (caracterLido == 'e')
+			{
+				addCaractereLexema();
+				caracterLido = fileLoader.getNextChar();
+				if (caracterLido == 'q')
+				{
+					addCaractereLexema();
+					return new Token(TokenType.RELOP, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+				}
+				else
+				{
+					addCaractereLexema();
+					errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+					lexema.setLength(0);
+					fileLoader.resetLastChar();
+				}
+			}
+			else if (caracterLido == 'd')
+			{
+				addCaractereLexema();
+				caracterLido = fileLoader.getNextChar();
+				if (caracterLido == 'f')
+				{
+					addCaractereLexema();
+					return new Token(TokenType.RELOP, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+				}
+				else
+				{
+					addCaractereLexema();
+					errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+					lexema.setLength(0);
+					fileLoader.resetLastChar();
+				}
 			}
 			else
 			{
@@ -161,46 +205,10 @@ public class Lexico
 				fileLoader.resetLastChar();
 			}
 		}
-		else if (caracterLido == 'e')
+		catch (Exception e)
 		{
-			addCaractereLexema();
-			caracterLido = fileLoader.getNextChar();
-			if (caracterLido == 'q')
-			{
-				addCaractereLexema();
-				return new Token(TokenType.RELOP, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
-			}
-			else
-			{
-				addCaractereLexema();
-				errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
-				lexema.setLength(0);
-				fileLoader.resetLastChar();
-			}
-		}
-		else if (caracterLido == 'd')
-		{
-			addCaractereLexema();
-			caracterLido = fileLoader.getNextChar();
-			if (caracterLido == 'f')
-			{
-				addCaractereLexema();
-				return new Token(TokenType.RELOP, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
-			}
-			else
-			{
-				addCaractereLexema();
-				errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
-				lexema.setLength(0);
-				fileLoader.resetLastChar();
-			}
-		}
-		else
-		{
-			addCaractereLexema();
-			errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
-			lexema.setLength(0);
-			fileLoader.resetLastChar();
+        	fileLoader.resetLastChar();
+        	errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
 		}
 		return null;
 	}
