@@ -146,12 +146,22 @@ public class Lexico
 
 	private Token obterNotacao(TokenType tokenType) throws EOFException, IOException
 	{ 
+		addCaractereLexema();
+		caracterLido = fileLoader.getNextChar();
+		if(!Character.isDigit(caracterLido) && !(caracterLido == '+' || caracterLido == '-')) {
+			fileLoader.resetLastChar();
+			return null;
+		}
+		
 		do {
 			addCaractereLexema();
 			caracterLido = fileLoader.getNextChar();
 		} while (Character.isDigit(caracterLido) || (caracterLido == '+' || caracterLido == '-'));
 		
-		if (!Character.isWhitespace(caracterLido)) { fileLoader.resetLastChar(); }
+		if (!Character.isWhitespace(caracterLido)) { 
+			fileLoader.resetLastChar();
+			return null;
+		}
 		
 		return new Token(tokenType, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn()); 
 	}
