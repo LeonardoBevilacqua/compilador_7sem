@@ -74,13 +74,28 @@ public class TabSimbolos {
 			token.setColuna(coluna);
 		} else {
 			token = new Token(TokenType.ID, lexema, linha, coluna);
-			tab.put(token.getLexema(), token);
 		}
 
 		return token;
 	}
 	
-	public void printReport() {
+	public void printReport()
+	{
+		cabecalhoTabela();
+		String formatTab = "| %-15s || %-16s |\n";
 		
+		tab.forEach((Lexema, token) -> {
+			   System.out.printf(formatTab, token.getTokenType(), Lexema );
+		});
+		System.out.println("---------------------------------------");
+	}
+
+	private void cabecalhoTabela()
+	{
+		System.out.println("\n---------------------------------------");
+		System.out.printf("|%27s %10s","Tabela de Simbolos","|");
+		System.out.println("\n---------------------------------------");
+		System.out.println("|      Token      ||      Lexema      |");
+		System.out.println("---------------------------------------");
 	}
 }

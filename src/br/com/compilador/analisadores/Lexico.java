@@ -4,209 +4,298 @@ import java.io.EOFException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import br.com.compilador.TabSimbolos;
 import br.com.compilador.token.Token;
 import br.com.compilador.token.TokenType;
 import br.com.compilador.utils.ErrorHandler;
 import br.com.compilador.utils.FileLoader;
 
-public class Lexico {
+public class Lexico
+{
 
-	private FileLoader fl;
-	private ErrorHandler errorH;
+	private final char ESPACO_EM_BRANCO = ' ';
+	private FileLoader fileLoader;
+	private ErrorHandler errorHandler;
 
-	private StringBuilder lexema = new StringBuilder();
-	private TokenType tokenType = null;
-	private char c = ' ';
+	private StringBuilder lexema = null;
+	private char caracterLido = ' ';
 	private long coluna_inicial;
-
-	public Lexico(String filename) {
-		errorH = ErrorHandler.getInstance();
-		try {
-			fl = new FileLoader(filename);
-		} catch (FileNotFoundException e) {
-			errorH.registraErro(e.getMessage());
-		}
+	
+	public Lexico(String filename)
+	{
+		errorHandler = ErrorHandler.getInstance();
+		
+		try 							{ fileLoader = new FileLoader(filename); }
+		catch (FileNotFoundException e) { errorHandler.registrarErroGenerico(e.getMessage()); }
 	}
-
-	public Token nextToken() {
-		lexema = new StringBuilder();
-		c = ' ';
-		tokenType = null;
+	
+	public Token nextToken()
+	{
+		Token tokenDeRetorno = null;
+		caracterLido = ESPACO_EM_BRANCO;
 		coluna_inicial = 1;
-
-		try {
+		
+		try
+		{
+			while (tokenDeRetorno == null)
+			{
+				lexema = new StringBuilder();
+				
+				if (lexema.length() == 0) { coluna_inicial = fileLoader.getColumn(); }
+				
+				caracterLido = fileLoader.getNextChar();
+				
+				
+				if (Character.isLetter(caracterLido) || caracterLido == '_')	{ tokenDeRetorno = obterID(); }
+				else if (Character.isDigit(caracterLido))						{ tokenDeRetorno = obterIntOrFloat(); }
+				else if(caracterLido == '$') 									{ tokenDeRetorno = obterRelop(); }
+				else if (caracterLido == '"') 									{ tokenDeRetorno = obterLiteral(); } 
+				else if (caracterLido == '<') 									{ tokenDeRetorno = obterAssign(); }
+				else 															{ tokenDeRetorno = obterCaracterSimples(); }
+				
+			}
+		} 
+		catch (Exception e)
+		{
+			if (lexema.length() != 0)
+			{
+				try 					{ fileLoader.resetLastChar(); }
+				catch (IOException e1)	{/*Todo implementar oque fazer*/ }
+			}
+			tokenDeRetorno =  new Token(TokenType.EOF, "", fileLoader.getLine(), fileLoader.getColumn());
+		}
+		return tokenDeRetorno;
+	}
+	
+	private Token obterID() throws IOException
+	{
+        Token token = null;
+        try
+		{
+        	addCaractereLexema();
+        	while (token == null)
+			{
+        		
+        		caracterLido = fileLoader.getNextChar();
+        		if (Character.isLetter(caracterLido) || caracterLido == '_' || Character.isDigit(caracterLido))
+                {
+        			addCaractereLexema();
+                }
+        		else
+        		{
+        			fileLoader.resetLastChar();
+                    token = TabSimbolos.getInstance().addToken(lexema.toString(), fileLoader.getLine(), coluna_inicial);
+        		}
+			}
+		}
+        catch (Exception e)
+		{
+        	fileLoader.resetLastChar();
+            token = TabSimbolos.getInstance().addToken(lexema.toString(), fileLoader.getLine(), coluna_inicial);
+		}
+        
+        return token;
+	}
+	
+	private Token obterIntOrFloat() throws EOFException, IOException
+	{
+		try
+		{
 			do {
-				c = fl.getNextChar();
-				if (lexema.length() == 0) {
-					coluna_inicial = fl.getColumn();
-				}
-
-				if (Character.isDigit(c)) {
-					if (verifica_int_float()) {
-						break;
-					}
-				} else if (c == '$') {
-					if (verificarRelop()) {
-						break;
-					}
-				} else if (verifica_caracteres_simples()) {
-					break;
-				}
-
-			} while (Character.isWhitespace(c));
-		} catch (IOException e) {
-			if (lexema.length() != 0) {
-				try {
-					fl.resetLastChar();
-				} catch (IOException e1) {
-					// erro
-				}
-				return obter_token();
-			}
-			return new Token(TokenType.EOF, "", fl.getLine(), fl.getColumn());
+				addCaractereLexema();
+				caracterLido = fileLoader.getNextChar();
+			}while (Character.isDigit(caracterLido));
+	
+			if (caracterLido == '.') 								{ return obterNumFloat(); }
+			else if (caracterLido == 'E' || caracterLido == 'e') 	{ return obterNotacao(TokenType.NUM_INT); }
+			else if (!Character.isWhitespace(caracterLido)) 		{ fileLoader.resetLastChar(); }
+			else 													{ return new Token(TokenType.NUM_INT, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn()); }
 		}
+		catch (IOException e)
+		{ return new Token(TokenType.NUM_INT, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn()); }
 
-		return obter_token();
+		return null;
+	}
+	
+	private Token obterNumFloat() throws EOFException, IOException
+	{
+		try
+		{
+			do {
+				addCaractereLexema();
+				caracterLido = fileLoader.getNextChar();
+			} while (Character.isDigit(caracterLido));
+	
+			if (caracterLido == 'E' || caracterLido == 'e') { return obterNotacao(TokenType.NUM_FLOAT); }
+			else if (!Character.isWhitespace(caracterLido))
+			{ 
+				addCaractereLexema();
+				errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+				return null;
+			}
+			
+			return new Token(TokenType.NUM_FLOAT, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+		}
+		catch(EOFException e)
+		{
+			fileLoader.resetLastChar();
+        	errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+		}
+		return null;
 	}
 
-	/**
-	 * This function verifies what type of number will get and generate the save the
-	 * token
-	 * 
-	 * @throws EOFException
-	 * @throws IOException
-	 */
-	private boolean verifica_int_float() throws EOFException, IOException {
-		tokenType = TokenType.NUM_INT;
-
+	private Token obterNotacao(TokenType tokenType) throws EOFException, IOException
+	{ 
 		do {
-			next_character();
-		} while (Character.isDigit(c));
-
-		if (c == '.') {
-			if (!verifica_float()) {
-				fl.resetLastChar();
-				return false;
+			addCaractereLexema();
+			caracterLido = fileLoader.getNextChar();
+		} while (Character.isDigit(caracterLido) || (caracterLido == '+' || caracterLido == '-'));
+		
+		if (!Character.isWhitespace(caracterLido)) { fileLoader.resetLastChar(); }
+		
+		return new Token(tokenType, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn()); 
+	}
+	
+	private Token obterRelop() throws EOFException, IOException
+	{
+		try
+		{
+			addCaractereLexema();
+			caracterLido = fileLoader.getNextChar();
+			if (caracterLido == 'l' | caracterLido == 'g')
+			{
+				addCaractereLexema();
+				caracterLido = fileLoader.getNextChar();
+				if (caracterLido == 't' | caracterLido == 'e')
+				{
+					addCaractereLexema();
+					return new Token(TokenType.RELOP, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+				}
+				else
+				{
+					addCaractereLexema();
+					errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+					lexema.setLength(0);
+					fileLoader.resetLastChar();
+				}
 			}
-		} else if (c == 'E' || c == 'e') {
-			if (!verifica_notacao()) {
-				fl.resetLastChar();
-				return false;
+			else if (caracterLido == 'e')
+			{
+				addCaractereLexema();
+				caracterLido = fileLoader.getNextChar();
+				if (caracterLido == 'q')
+				{
+					addCaractereLexema();
+					return new Token(TokenType.RELOP, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+				}
+				else
+				{
+					addCaractereLexema();
+					errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+					lexema.setLength(0);
+					fileLoader.resetLastChar();
+				}
 			}
-		} else if (!Character.isWhitespace(c)) {
-			fl.resetLastChar();
-			return false;
-		}
-		fl.resetLastChar();
-
-		return true;
-	}
-
-	private void next_character() throws EOFException, IOException {
-		lexema.append(c);
-		c = fl.getNextChar();
-	}
-
-	private boolean verifica_float() throws EOFException, IOException {
-		tokenType = TokenType.NUM_FLOAT;
-		do {
-			next_character();
-		} while (Character.isDigit(c));
-
-		if (c == 'E' || c == 'e') {
-			verifica_notacao();
-		} else if (!Character.isWhitespace(c)) {
-			fl.resetLastChar();
-			return false;
-		}
-
-		return true;
-	}
-
-	private boolean verifica_notacao() throws EOFException, IOException { 
-		do {
-			next_character();
-		} while (Character.isDigit(c) || (c == '+' || c == '-'));
-		if (!Character.isWhitespace(c)) {
-			fl.resetLastChar();
-			return false;
-		}
-
-		return true;
-	}
-
-	private boolean verifica_caracteres_simples() throws IOException {
-		if (c == '+' || c == '-') {
-			tokenType = TokenType.ARIT_AS;
-		} else if (c == '*' || c == '/') {
-			tokenType = TokenType.ARIT_MD;
-		} else if (c == ';') {
-			tokenType = TokenType.TERM;
-		} else if (c == '(') {
-			tokenType = TokenType.L_PAR;
-		} else if (c == ')') {
-			tokenType = TokenType.R_PAR;
-		} else {
-			//fl.resetLastChar();
-			return false;
-		}
-
-		lexema.append(c);
-		return true;
-	}
-
-	private Token obter_token() {
-		return new Token(tokenType, lexema.toString(), fl.getLine(), coluna_inicial);
-	}
-
-	private boolean verificarRelop() throws EOFException, IOException {
-		next_character();
-		if (c == 'l' | c == 'g') {
-			next_character();
-			if (c == 't' | c == 'e') {
-				lexema.append(c);
-				tokenType = TokenType.RELOP;
-			} else {
-				lexema.append(c);
-				errorH.registraErro("lexema errado :" + lexema);
+			else if (caracterLido == 'd')
+			{
+				addCaractereLexema();
+				caracterLido = fileLoader.getNextChar();
+				if (caracterLido == 'f')
+				{
+					addCaractereLexema();
+					return new Token(TokenType.RELOP, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+				}
+				else
+				{
+					addCaractereLexema();
+					errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+					lexema.setLength(0);
+					fileLoader.resetLastChar();
+				}
+			}
+			else
+			{
+				addCaractereLexema();
+				errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
 				lexema.setLength(0);
-				fl.resetLastChar();
-				return false;
+				fileLoader.resetLastChar();
 			}
-		} else if (c == 'e') {
-			next_character();
-			if (c == 'q') {
-				lexema.append(c);
-				tokenType = TokenType.RELOP;
-			} else {
-				lexema.append(c);
-				errorH.registraErro("lexema errado :" + lexema);
-				lexema.setLength(0);
-				fl.resetLastChar();
-				return false;
-			}
-		} else if (c == 'd') {
-			next_character();
-			if (c == 'f') {
-				lexema.append(c);
-				tokenType = TokenType.RELOP;
-
-			} else {
-				lexema.append(c);
-				errorH.registraErro("lexema errado :" + lexema);
-				lexema.setLength(0);
-				fl.resetLastChar();
-				return false;
-			}
-		} else {
-			lexema.append(c);
-			errorH.registraErro("lexema errado :" + lexema);
-			lexema.setLength(0);
-			fl.resetLastChar();
-			return false;
 		}
-
-		return true;
+		catch (Exception e)
+		{
+        	fileLoader.resetLastChar();
+        	errorHandler.registrarErroLexico(lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+		}
+		return null;
 	}
-
+	
+	private Token obterLiteral() throws IOException
+	{
+		Token token = null;
+        try
+		{
+        	addCaractereLexema();
+        	while (token == null)
+			{
+        		caracterLido = fileLoader.getNextChar();
+        		addCaractereLexema();
+        		if (caracterLido == '"')
+                {
+        			token = new Token(TokenType.LITERAL, lexema.toString(), fileLoader.getLine(), coluna_inicial);
+                }
+			}
+		}
+        catch (Exception e)
+		{
+        	fileLoader.resetLastChar();
+            //TODO
+		}
+        
+        return token;
+    }
+	
+	private Token obterAssign() throws IOException
+	{
+		Token token = null;
+	    try
+		{
+	    	addCaractereLexema();
+			caracterLido = fileLoader.getNextChar();
+			if (caracterLido == '-')
+	        {
+				addCaractereLexema();
+				token = new Token(TokenType.ASSIGN, lexema.toString(), fileLoader.getLine(), coluna_inicial);
+	        }
+			else
+			{
+				fileLoader.resetLastChar();
+				//Todo erroH
+			}
+		}
+	    catch (Exception e)
+		{
+	    	fileLoader.resetLastChar();
+	        //TODO
+		}
+	    
+	    return token;
+	}
+	
+	private Token obterCaracterSimples() throws IOException
+	{
+		TokenType tokenType = null;
+		addCaractereLexema();
+		if (caracterLido == '+' || caracterLido == '-') 		{ tokenType = TokenType.ARIT_AS; }
+		else if (caracterLido == '*' || caracterLido == '/') 	{ tokenType = TokenType.ARIT_MD; } 
+		else if (caracterLido == ';') 							{ tokenType = TokenType.TERM; } 
+		else if (caracterLido == '(') 							{ tokenType = TokenType.L_PAR; } 
+		else if (caracterLido == ')') 							{ tokenType = TokenType.R_PAR; }
+		
+		return (tokenType == null) ? null : new Token(tokenType, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+	}
+	
+	private void addCaractereLexema()
+	{
+		if(!Character.isWhitespace(caracterLido)) { lexema.append(caracterLido); }
+	}
 }
