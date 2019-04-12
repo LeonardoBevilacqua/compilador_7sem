@@ -46,12 +46,13 @@ public class Lexico
 				caracterLido = fileLoader.getNextChar();
 				
 				
-				if (Character.isLetter(caracterLido) || caracterLido == '_')	{ tokenDeRetorno = obterID(); }
-				else if (Character.isDigit(caracterLido))						{ tokenDeRetorno = obterIntOrFloat(); }
-				else if(caracterLido == '$') 									{ tokenDeRetorno = obterRelop(); }
-				else if (caracterLido == '"') 									{ tokenDeRetorno = obterLiteral(); } 
-				else if (caracterLido == '<') 									{ tokenDeRetorno = obterAssign(); }
-				else 															{ tokenDeRetorno = obterCaracterSimples(); }
+				if (caracterLido == '#') 											{ ignoraComentario(); }
+				else if (Character.isLetter(caracterLido) || caracterLido == '_')	{ tokenDeRetorno = obterID(); }
+				else if (Character.isDigit(caracterLido))							{ tokenDeRetorno = obterIntOrFloat(); }
+				else if (caracterLido == '$') 										{ tokenDeRetorno = obterRelop(); }
+				else if (caracterLido == '"') 										{ tokenDeRetorno = obterLiteral(); } 
+				else if (caracterLido == '<') 										{ tokenDeRetorno = obterAssign(); }
+				else 																{ tokenDeRetorno = obterCaracterSimples(); }
 				
 			}
 		} 
@@ -302,6 +303,21 @@ public class Lexico
 		else if (caracterLido == ')') 							{ tokenType = TokenType.R_PAR; }
 		
 		return (tokenType == null) ? null : new Token(tokenType, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+	}
+	
+	private void ignoraComentario() 
+	{
+		do {
+			try {
+				caracterLido = fileLoader.getNextChar();
+			} catch (EOFException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} while (caracterLido != '#');
 	}
 	
 	private void addCaractereLexema()
