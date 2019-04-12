@@ -11,7 +11,7 @@ public class Sintatico {
 	private TabSimbolos tabelaSimbolos;
 	private ErrorHandler errorH;
 
-	public Sintatico(String filename) {
+	public Sintatico(String filename) throws Exception {
 		lexico = new Lexico(filename);
 		tabelaSimbolos = TabSimbolos.getInstance();
 		errorH = ErrorHandler.getInstance();
@@ -32,8 +32,6 @@ public class Sintatico {
 		System.out.println("------------------------------------------------");
 		tabelaSimbolos.printReport();
 		errorH.gerarRelatorioLexico();
-		errorH.gerarRelatorioGenerico();
-
 	}
 
 }
