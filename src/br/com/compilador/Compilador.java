@@ -2,7 +2,6 @@ package br.com.compilador;
 
 import br.com.compilador.analisadores.Sintatico;
 import br.com.compilador.utils.ArquivoNaoEncontradoException;
-import br.com.compilador.utils.ErrorHandler;
 
 public class Compilador {
 
