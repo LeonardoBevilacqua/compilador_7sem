@@ -1,5 +1,14 @@
+/**
+* Leonardo Almeida Bevilacqua 1510033187
+* Marcelo Costa 1510030281
+* Marcio Macedo 1510029701
+* Thiago Oliveira 1510028818
+*/
 package br.com.compilador.token;
 
+/**
+* Enumerado de tipos de tokens
+*/
 public enum TokenType {
 	EOF(0), 		// Fim do arquivo
 	NUM_INT(1), 	// 123,48, 3E+10
