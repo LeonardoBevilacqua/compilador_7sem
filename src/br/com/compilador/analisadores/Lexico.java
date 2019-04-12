@@ -1,3 +1,9 @@
+/**
+* Leonardo Almeida Bevilacqua 1510033187
+* Marcelo Costa 1510030281
+* Marcio Macedo 1510029701
+* Thiago Oliveira 1510028818
+*/
 package br.com.compilador.analisadores;
 
 import java.io.EOFException;
@@ -29,7 +35,10 @@ public class Lexico
 		try 							{ fileLoader = new FileLoader(filename); }
 		catch (FileNotFoundException e) { throw new ArquivoNaoEncontradoException("Arquivo: "+filename+" nao encontrado"); }
 	}
-	
+	/**
+	* Metodo responsavel por gerar os tokens
+	* return Token token lido apos a leitura do arquivo
+	*/
 	public Token nextToken()
 	{
 		Token tokenDeRetorno = null;
@@ -70,6 +79,9 @@ public class Lexico
 		return tokenDeRetorno;
 	}
 	
+	/**
+	* Metodo responsavel por buscar e retornar um ID
+	*/
 	private Token obterID() throws IOException
 	{
         Token token = null;
@@ -100,6 +112,10 @@ public class Lexico
         return token;
 	}
 	
+	/**
+	* Metodo responsavel por buscar e retonar um token numerico, podendo
+	* ser do tipo inteiro ou real, com ou sem notação cientifica
+	*/
 	private Token obterIntOrFloat() throws EOFException, IOException
 	{
 		try
@@ -120,6 +136,10 @@ public class Lexico
 		return null;
 	}
 	
+	/**
+	* Metodo responsavel de retornar um valor do tipo real,
+	* com ou sem notação cientifica
+	*/
 	private Token obterNumFloat() throws EOFException, IOException
 	{
 		try
@@ -146,7 +166,11 @@ public class Lexico
 		}
 		return null;
 	}
-
+	
+	/**
+	* Metodo responsavel por devolver um numero com notação cientifica
+	* @param tokenType parametro que indica de qual tipo numerico ele veio
+	*/
 	private Token obterNotacao(TokenType tokenType) throws EOFException, IOException
 	{ 
 		addCaractereLexema();
@@ -169,6 +193,9 @@ public class Lexico
 		return gerarToken(tokenType);
 	}
 	
+	/**
+	* Metodo responsavel para obter e retonar um simbolo relacional
+	*/
 	private Token obterRelop() throws EOFException, IOException
 	{
 		try
@@ -242,6 +269,9 @@ public class Lexico
 		return null;
 	}
 	
+	/**
+	* Metodo responsavel por obter e retonar uma string de caracteres entre aspas
+	*/
 	private Token obterLiteral() throws IOException
 	{
 		Token token = null;
@@ -267,6 +297,9 @@ public class Lexico
         return token;
     }
 	
+	/**
+	* Metodo responsavel por devolver um simbolo de atribuição
+	*/
 	private Token obterAssign() throws IOException
 	{
 		Token token = null;
@@ -294,6 +327,9 @@ public class Lexico
 	    return token;
 	}
 	
+	/**
+	* metodo responsavel por verificar simbolos unicos e retornar se devido token
+	*/
 	private Token obterCaracterSimples() throws IOException
 	{
 		TokenType tokenType = null;
@@ -307,6 +343,9 @@ public class Lexico
 		return (tokenType == null) ? null : gerarToken(tokenType);
 	}
 	
+	/**
+	* metodo responsavel por ignorar o comentario no codigo
+	*/
 	private void ignoraComentario() 
 	{
 		do {
@@ -322,11 +361,17 @@ public class Lexico
 		} while (caracterLido != '#');
 	}
 	
+	/**
+	* metodo responsavel por encapsular a atribuição do lexema
+	*/
 	private void addCaractereLexema()
 	{
 		if(!Character.isWhitespace(caracterLido)) { lexema.append(caracterLido); }
 	}
-
+	
+	/**
+	* metodo responsavel por encapsular a geração de um token
+	*/
 	private Token gerarToken(TokenType tokenType)
 	{
 		try {
