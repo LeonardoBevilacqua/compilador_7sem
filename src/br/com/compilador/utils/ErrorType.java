@@ -1,5 +1,14 @@
+/**
+* Leonardo Almeida Bevilacqua 1510033187
+* Marcelo Costa 1510030281
+* Marcio Macedo 1510029701
+* Thiago Oliveira 1510028818
+*/
 package br.com.compilador.utils;
 
+/**
+* Enumerado de tipos de erros
+*/
 public enum ErrorType {
     LEXICO(1),
     SINTATICO(2),
