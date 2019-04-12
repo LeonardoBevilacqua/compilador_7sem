@@ -1,3 +1,9 @@
+/**
+* Leonardo Almeida Bevilacqua 1510033187
+* Marcelo Costa 1510030281
+* Marcio Macedo 1510029701
+* Thiago Oliveira 1510028818
+*/
 package br.com.compilador.token;
 
 public class Token {
@@ -19,14 +25,20 @@ public class Token {
 		this.linha = linha;
 		this.coluna = coluna;
 	}
-
+	
+	/**
+	* metodo responsavel por imprimir os dados do token
+	*/
 	public void print() {
 		String formatTokens = "(%3s,%3s)| %-10s || %-21s |\n";
 		
 		System.out.printf(formatTokens,this.coluna,this.linha,tokenType.toString(), this.lexema);	
 
 	}
-
+	
+	/**
+	* getters e setters
+	*/
 	public TokenType getTokenType() {
 		return this.tokenType;
 	}
