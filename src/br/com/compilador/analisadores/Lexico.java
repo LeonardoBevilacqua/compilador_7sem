@@ -42,17 +42,18 @@ public class Lexico
 			{
 				lexema = new StringBuilder();
 				
-				if (lexema.length() == 0) { coluna_inicial = fileLoader.getColumn(); }
 				
 				caracterLido = fileLoader.getNextChar();
+				if (lexema.length() == 0) { coluna_inicial = fileLoader.getColumn(); }
 				
 				
-				if (Character.isLetter(caracterLido) || caracterLido == '_')	{ tokenDeRetorno = obterID(); }
-				else if (Character.isDigit(caracterLido))						{ tokenDeRetorno = obterIntOrFloat(); }
-				else if(caracterLido == '$') 									{ tokenDeRetorno = obterRelop(); }
-				else if (caracterLido == '"') 									{ tokenDeRetorno = obterLiteral(); } 
-				else if (caracterLido == '<') 									{ tokenDeRetorno = obterAssign(); }
-				else 															{ tokenDeRetorno = obterCaracterSimples(); }
+				if (caracterLido == '#') 											{ ignoraComentario(); }
+				else if (Character.isLetter(caracterLido) || caracterLido == '_')	{ tokenDeRetorno = obterID(); }
+				else if (Character.isDigit(caracterLido))							{ tokenDeRetorno = obterIntOrFloat(); }
+				else if (caracterLido == '$') 										{ tokenDeRetorno = obterRelop(); }
+				else if (caracterLido == '"') 										{ tokenDeRetorno = obterLiteral(); } 
+				else if (caracterLido == '<') 										{ tokenDeRetorno = obterAssign(); }
+				else 																{ tokenDeRetorno = obterCaracterSimples(); }
 				
 			}
 		} 
@@ -63,7 +64,8 @@ public class Lexico
 				try 					{ fileLoader.resetLastChar(); }
 				catch (IOException e1)	{/*Todo implementar oque fazer*/ }
 			}
-			tokenDeRetorno =  new Token(TokenType.EOF, "", fileLoader.getLine(), fileLoader.getColumn());
+			lexema.setLength(0);
+			tokenDeRetorno = gerarToken(TokenType.EOF);
 		}
 		return tokenDeRetorno;
 	}
@@ -110,10 +112,10 @@ public class Lexico
 			if (caracterLido == '.') 								{ return obterNumFloat(); }
 			else if (caracterLido == 'E' || caracterLido == 'e') 	{ return obterNotacao(TokenType.NUM_INT); }
 			else if (!Character.isWhitespace(caracterLido)) 		{ fileLoader.resetLastChar(); }
-			else 													{ return new Token(TokenType.NUM_INT, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn()); }
+			else 													{ return gerarToken(TokenType.NUM_INT); }
 		}
 		catch (IOException e)
-		{ return new Token(TokenType.NUM_INT, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn()); }
+		{ return gerarToken(TokenType.NUM_INT); }
 
 		return null;
 	}
@@ -135,7 +137,7 @@ public class Lexico
 				return null;
 			}
 			
-			return new Token(TokenType.NUM_FLOAT, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+			return gerarToken(TokenType.NUM_FLOAT);
 		}
 		catch(EOFException e)
 		{
@@ -147,14 +149,24 @@ public class Lexico
 
 	private Token obterNotacao(TokenType tokenType) throws EOFException, IOException
 	{ 
+		addCaractereLexema();
+		caracterLido = fileLoader.getNextChar();
+		if(!Character.isDigit(caracterLido) && !(caracterLido == '+' || caracterLido == '-')) {
+			fileLoader.resetLastChar();
+			return null;
+		}
+		
 		do {
 			addCaractereLexema();
 			caracterLido = fileLoader.getNextChar();
 		} while (Character.isDigit(caracterLido) || (caracterLido == '+' || caracterLido == '-'));
 		
-		if (!Character.isWhitespace(caracterLido)) { fileLoader.resetLastChar(); }
+		if (!Character.isWhitespace(caracterLido)) { 
+			fileLoader.resetLastChar();
+			return null;
+		}
 		
-		return new Token(tokenType, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn()); 
+		return gerarToken(tokenType);
 	}
 	
 	private Token obterRelop() throws EOFException, IOException
@@ -170,7 +182,7 @@ public class Lexico
 				if (caracterLido == 't' | caracterLido == 'e')
 				{
 					addCaractereLexema();
-					return new Token(TokenType.RELOP, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+					return gerarToken(TokenType.RELOP);
 				}
 				else
 				{
@@ -187,7 +199,7 @@ public class Lexico
 				if (caracterLido == 'q')
 				{
 					addCaractereLexema();
-					return new Token(TokenType.RELOP, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+					return gerarToken(TokenType.RELOP);
 				}
 				else
 				{
@@ -204,7 +216,7 @@ public class Lexico
 				if (caracterLido == 'f')
 				{
 					addCaractereLexema();
-					return new Token(TokenType.RELOP, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+					return gerarToken(TokenType.RELOP);
 				}
 				else
 				{
@@ -242,7 +254,7 @@ public class Lexico
         		addCaractereLexema();
         		if (caracterLido == '"')
                 {
-        			token = new Token(TokenType.LITERAL, lexema.toString(), fileLoader.getLine(), coluna_inicial);
+        			token = gerarToken(TokenType.LITERAL);
                 }
 			}
 		}
@@ -265,7 +277,7 @@ public class Lexico
 			if (caracterLido == '-')
 	        {
 				addCaractereLexema();
-				token = new Token(TokenType.ASSIGN, lexema.toString(), fileLoader.getLine(), coluna_inicial);
+				token = gerarToken(TokenType.ASSIGN);
 	        }
 			else
 			{
@@ -292,11 +304,37 @@ public class Lexico
 		else if (caracterLido == '(') 							{ tokenType = TokenType.L_PAR; } 
 		else if (caracterLido == ')') 							{ tokenType = TokenType.R_PAR; }
 		
-		return (tokenType == null) ? null : new Token(tokenType, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+		return (tokenType == null) ? null : gerarToken(tokenType);
+	}
+	
+	private void ignoraComentario() 
+	{
+		do {
+			try {
+				caracterLido = fileLoader.getNextChar();
+			} catch (EOFException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} while (caracterLido != '#');
 	}
 	
 	private void addCaractereLexema()
 	{
 		if(!Character.isWhitespace(caracterLido)) { lexema.append(caracterLido); }
+	}
+
+	private Token gerarToken(TokenType tokenType)
+	{
+		try {
+			fileLoader.resetLastChar();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return new Token(tokenType, lexema.toString(), fileLoader.getLine(), coluna_inicial);
 	}
 }
