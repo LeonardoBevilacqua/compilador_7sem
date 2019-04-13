@@ -127,13 +127,12 @@ public class Lexico
 	
 			if (caracterLido == '.') 								{ return obterNumFloat(); }
 			else if (caracterLido == 'E' || caracterLido == 'e') 	{ return obterNotacao(TokenType.NUM_INT); }
-			else if (!Character.isWhitespace(caracterLido)) 		{ fileLoader.resetLastChar(); }
-			else 													{ return gerarToken(TokenType.NUM_INT); }
+			else 													{ fileLoader.resetLastChar(); return gerarToken(TokenType.NUM_INT); }
 		}
 		catch (IOException e)
 		{ return gerarToken(TokenType.NUM_INT); }
 
-		return null;
+
 	}
 	
 	/**
@@ -141,28 +140,42 @@ public class Lexico
 	* com ou sem notação cientifica
 	*/
 	private Token obterNumFloat() throws EOFException, IOException
-	{
-		try
-		{
-			do {
-				addCaractereLexema();
+	{  lexema.append(caracterLido);
+		while(true) {
+			try {
 				caracterLido = fileLoader.getNextChar();
-			} while (Character.isDigit(caracterLido));
-	
-			if (caracterLido == 'E' || caracterLido == 'e') { return obterNotacao(TokenType.NUM_FLOAT); }
-			else if (!Character.isWhitespace(caracterLido))
-			{ 
-				addCaractereLexema();
-				errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
-				return null;
+				if (Character.isDigit(caracterLido)) {
+					lexema.append(caracterLido);
+				} else if ((caracterLido == 'E' || caracterLido == 'e') && Character.isDigit(lexema.charAt(lexema.length() - 1)) ) {
+					lexema.append(caracterLido);
+					return obterNotacao(TokenType.NUM_FLOAT);
+
+				} else {
+					if (Character.isDigit(lexema.charAt(lexema.length() - 1))) {
+						fileLoader.resetLastChar();
+						return gerarToken(TokenType.NUM_FLOAT);
+
+					} else {
+						addCaractereLexema();
+						errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+						lexema.setLength(0);
+						break;
+					}
+				}
+			} catch (EOFException e) {
+				if (lexema.length() > 0){
+					if (lexema.charAt(lexema.length() - 1) == '.') {
+						addCaractereLexema();
+						errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+						break;
+					} else {
+						return gerarToken(TokenType.NUM_FLOAT);
+
+					}
+				} else {
+					break;
+				}
 			}
-			
-			return gerarToken(TokenType.NUM_FLOAT);
-		}
-		catch(EOFException e)
-		{
-			fileLoader.resetLastChar();
-        	errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
 		}
 		return null;
 	}
@@ -175,6 +188,9 @@ public class Lexico
 	{ 
 		addCaractereLexema();
 		caracterLido = fileLoader.getNextChar();
+		if(Character.isWhitespace(caracterLido)){
+			return gerarToken(tokenType);
+		}
 		if(!Character.isDigit(caracterLido) && !(caracterLido == '+' || caracterLido == '-')) {
 			fileLoader.resetLastChar();
 			return null;
@@ -184,12 +200,9 @@ public class Lexico
 			addCaractereLexema();
 			caracterLido = fileLoader.getNextChar();
 		} while (Character.isDigit(caracterLido) || (caracterLido == '+' || caracterLido == '-'));
-		
-		if (!Character.isWhitespace(caracterLido)) { 
-			fileLoader.resetLastChar();
-			return null;
-		}
-		
+
+
+		fileLoader.resetLastChar();
 		return gerarToken(tokenType);
 	}
 	
@@ -216,7 +229,6 @@ public class Lexico
 					addCaractereLexema();
 					errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
 					lexema.setLength(0);
-					fileLoader.resetLastChar();
 				}
 			}
 			else if (caracterLido == 'e')
@@ -233,7 +245,6 @@ public class Lexico
 					addCaractereLexema();
 					errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
 					lexema.setLength(0);
-					fileLoader.resetLastChar();
 				}
 			}
 			else if (caracterLido == 'd')
@@ -250,7 +261,6 @@ public class Lexico
 					addCaractereLexema();
 					errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
 					lexema.setLength(0);
-					fileLoader.resetLastChar();
 				}
 			}
 			else
@@ -258,7 +268,6 @@ public class Lexico
 				addCaractereLexema();
 				errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
 				lexema.setLength(0);
-				fileLoader.resetLastChar();
 			}
 		}
 		catch (Exception e)
@@ -290,8 +299,8 @@ public class Lexico
 		}
         catch (Exception e)
 		{
-        	fileLoader.resetLastChar();
-            //TODO
+			errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+			lexema.setLength(0);
 		}
         
         return token;
@@ -314,14 +323,15 @@ public class Lexico
 	        }
 			else
 			{
-				fileLoader.resetLastChar();
-				//Todo erroH
+				addCaractereLexema();
+				errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+				lexema.setLength(0);
 			}
 		}
 	    catch (Exception e)
 		{
-	    	fileLoader.resetLastChar();
-	        //TODO
+			errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+			lexema.setLength(0);
 		}
 	    
 	    return token;
@@ -349,7 +359,7 @@ public class Lexico
 	/**
 	* metodo responsavel por ignorar o comentario no codigo
 	*/
-	private void ignoraComentario() 
+	private void ignoraComentario()
 	{
 		do {
 			try {
