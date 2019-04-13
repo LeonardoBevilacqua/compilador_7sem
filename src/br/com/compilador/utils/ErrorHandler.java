@@ -19,7 +19,7 @@ public class ErrorHandler {
 	*/
 	public void registrarErroLexico(ErrorType errorType, String lexema, long linha, long coluna)
 	{
-		String erroLexico = "Lexema errado: "+lexema+" Tipo do Erro: "+errorType+" Linha: "+linha+" Coluna: "+coluna;
+		String erroLexico = "Lexema errado: "+lexema+" | Tipo do Erro: "+errorType+" Linha: "+linha+" Coluna: "+coluna;
 		errosLexicos.add(erroLexico);
 	}
 	
