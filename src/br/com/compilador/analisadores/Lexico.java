@@ -147,7 +147,6 @@ public class Lexico
 				if (Character.isDigit(caracterLido)) {
 					lexema.append(caracterLido);
 				} else if ((caracterLido == 'E' || caracterLido == 'e') && Character.isDigit(lexema.charAt(lexema.length() - 1)) ) {
-					lexema.append(caracterLido);
 					return obterNotacao(TokenType.NUM_FLOAT);
 
 				} else {
@@ -184,26 +183,46 @@ public class Lexico
 	* Metodo responsavel por devolver um numero com notação cientifica
 	* @param tokenType parametro que indica de qual tipo numerico ele veio
 	*/
-	private Token obterNotacao(TokenType tokenType) throws EOFException, IOException
+	private Token obterNotacao(TokenType tokenType) 
 	{ 
-		addCaractereLexema();
-		caracterLido = fileLoader.getNextChar();
-		if(Character.isWhitespace(caracterLido)){
-			return gerarToken(tokenType);
-		}
-		if(!Character.isDigit(caracterLido) && !(caracterLido == '+' || caracterLido == '-')) {
-			fileLoader.resetLastChar();
-			return null;
-		}
-		
-		do {
-			addCaractereLexema();
-			caracterLido = fileLoader.getNextChar();
-		} while (Character.isDigit(caracterLido) || (caracterLido == '+' || caracterLido == '-'));
+		boolean tokenValido = false;
+	    try
+	    {
+	        addCaractereLexema();
+	        caracterLido = fileLoader.getNextChar();
+	        
+	        if(!(caracterLido == '+' || caracterLido == '-')) 
+	        {
+	            errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+	            return null;
+	        }
+	        
+	        addCaractereLexema();
+            caracterLido = fileLoader.getNextChar();
+            if(Character.isDigit(caracterLido)) {
+            	tokenValido = true;
+            	while (Character.isDigit(caracterLido))
+    	        {
+            		addCaractereLexema();
+                    caracterLido = fileLoader.getNextChar();
+    	        }
+            }else {
+            	addCaractereLexema();
+	        	errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+	            return null;
+            }
 
-
-		fileLoader.resetLastChar();
-		return gerarToken(tokenType);
+	        fileLoader.resetLastChar();
+	        return gerarToken(tokenType);
+	    }
+	    catch(Exception e)
+	    {
+	    	if(!tokenValido) {
+	    		errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+		        return null;
+	    	}
+	    	return gerarToken(tokenType);	        
+	    }
 	}
 	
 	/**
