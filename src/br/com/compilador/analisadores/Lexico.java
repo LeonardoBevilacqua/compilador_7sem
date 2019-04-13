@@ -383,13 +383,10 @@ public class Lexico
 		do {
 			try {
 				caracterLido = fileLoader.getNextChar();
-			} catch (EOFException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			} catch (Exception e) {
+				errorHandler.registrarErroLexico(ErrorType.LEXICO, "Sequencia de comentários", fileLoader.getLine(), fileLoader.getColumn());
+				break;
+			} 
 		} while (caracterLido != '#');
 	}
 	
