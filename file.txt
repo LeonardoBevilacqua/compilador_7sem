@@ -1,1 +1,25 @@
-#10.2e+12 2
+123 48 3E+10
+4.8 3.10E+10
+"Carlos" "Batata"
+val _salario i__
+$lt $gt $ge $le $eq $df
++ -
+* /
+<-
+;
+(
+)
+true false
+and not or
+bool text int
+program
+end_prog
+begin
+end
+if
+then
+else
+for
+while
+declare
+to
