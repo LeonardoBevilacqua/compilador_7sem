@@ -41,7 +41,7 @@ public class Sintatico {
 		} while (tokenLido.getTokenType() != TokenType.EOF);
 		System.out.println("------------------------------------------------");
 		tabelaSimbolos.printReport();
-		errorH.gerarRelatorioLexico();
+		errorH.gerarRelatorio();
 	}
 
 }
