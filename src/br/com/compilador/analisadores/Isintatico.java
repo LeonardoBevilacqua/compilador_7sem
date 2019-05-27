@@ -5,7 +5,7 @@ public interface Isintatico
 	void derivaS();
 	void derivaCmds();
 	void derivaCmd();
-	void derivaDecl();
+	boolean derivaDecl();
 	void derivaCond();
 	void derivaCndb();
 	void derivaAtrib();
