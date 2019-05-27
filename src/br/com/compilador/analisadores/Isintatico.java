@@ -32,5 +32,5 @@ public interface Isintatico
 	void derivaEXPNum();
 	void derivaREPW();
 	void derivaExplo();
-	void derivaBloco();
+	boolean derivaBloco();
 }

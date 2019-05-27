@@ -47,13 +47,73 @@ public class Sintatico implements Isintatico
 		 * System.out.println("------------------------------------------------");
 		 * tabelaSimbolos.printReport(); errorH.gerarRelatorio();
 		 */
-		derivaDecl();
+		derivaS();
+		errorH.gerarRelatorio();
 	}
 
 	@Override
 	public void derivaS()
 	{
-		// TODO Auto-generated method stub
+		// program
+		token = lexico.nextToken();
+		if(!token.getTokenType().equals(TokenType.PROGRAM)) 
+		{
+			gerarError(ErrorType.SINTATICO, token);
+		}
+		else
+		{
+			token = lexico.nextToken();			
+		}
+		
+		// ID
+		if(!token.getTokenType().equals(TokenType.ID))
+		{
+			gerarError(ErrorType.SINTATICO, token);
+		}
+		else
+		{
+			token = lexico.nextToken();
+		}
+		
+		// term
+		if(!token.getTokenType().equals(TokenType.TERM))
+		{
+			gerarError(ErrorType.SINTATICO, token);
+		}
+		else
+		{
+			token = lexico.nextToken();
+		}
+		
+		// DERIVA BLOCO
+		if(!derivaBloco())
+		{
+			gerarError(ErrorType.SINTATICO, token);
+		}
+		else
+		{
+			token = lexico.nextToken();
+		}
+		
+		// end_prog
+		if(!token.getTokenType().equals(TokenType.END_PROG))
+		{
+			gerarError(ErrorType.SINTATICO, token);
+		}
+		else
+		{
+			token = lexico.nextToken();
+		}
+		
+		// term
+		if(!token.getTokenType().equals(TokenType.TERM))
+		{
+			gerarError(ErrorType.SINTATICO, token);
+		}
+		else
+		{
+			token = lexico.nextToken();
+		}
 
 	}
 
@@ -299,10 +359,9 @@ public class Sintatico implements Isintatico
 	}
 
 	@Override
-	public void derivaBloco()
+	public boolean derivaBloco()
 	{
-		// TODO Auto-generated method stub
-
+		return true;
 	}
 
 	private void gerarError(ErrorType erroType, Token token)
