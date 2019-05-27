@@ -6,10 +6,10 @@ public interface Isintatico
 	boolean derivaCmds();
 	boolean derivaCmd();
 	boolean derivaDecl();
-	void derivaCond();
-	void derivaCndb();
-	void derivaAtrib();
-	void derivaExp();
+	boolean derivaCond();
+	boolean derivaCndb();
+	boolean derivaAtrib();
+	boolean derivaExp();
 	void derivaFID();
 	void derivaFOPNum();
 	void derivaFEXPNum_1();

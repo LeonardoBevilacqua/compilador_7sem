@@ -131,7 +131,10 @@ public class Sintatico implements Isintatico
 		// Deriva COND
 		else if(token.getTokenType().equals(TokenType.IF))
 		{
-			
+			if(!derivaCond())
+			{
+				return false;
+			}
 		}
 		// Deriva REP
 		else if(token.getTokenType().equals(TokenType.FOR) || token.getTokenType().equals(TokenType.WHILE))
@@ -170,7 +173,10 @@ public class Sintatico implements Isintatico
 		// Deriva COND
 		else if(token.getTokenType().equals(TokenType.IF)) 
 		{
-
+			if(!derivaCond())
+			{
+				return false;
+			}
 		}
 		// Deriva REP
 		else if(token.getTokenType().equals(TokenType.FOR) || token.getTokenType().equals(TokenType.WHILE))
@@ -242,30 +248,86 @@ public class Sintatico implements Isintatico
 	}
 
 	@Override
-	public void derivaCond()
+	public boolean derivaCond()
 	{
-		// TODO Auto-generated method stub
+		// if
+		if(!token.getTokenType().equals(TokenType.IF))
+		{
+			return false;
+		}
+		// TODO: finalizar
+		else if(!derivaBloco())
+		{
+			return false;
+		}
+		else if(!derivaCndb())
+		{
+			return false;
+		}
+		
+
+		return true;
+	}
+
+	@Override
+	public boolean derivaCndb()
+	{
+		// else
+		if(!token.getTokenType().equals(TokenType.ELSE))
+		{
+			return false;
+		}
+		// Verifica follow
+		else 
+		{
+			Token bufferToken = token;
+			token = lexico.nextToken();
+
+		}
+		return true;
+	}
+
+	@Override
+	public boolean derivaAtrib()
+	{
+		// id
+		if(!token.getTokenType().equals(TokenType.ID))
+		{
+			return false;
+		}
+		else
+		{
+			// TODO: verificar se existe
+		}
+		
+		// assign
+		token = lexico.nextToken();
+		if(!token.getTokenType().equals(TokenType.ASSIGN))
+		{
+			return false;
+		}
+		// Deriva EXP
+		token = lexico.nextToken();
+		if(!derivaExp())
+		{
+			return false;
+		}
+		// term
+		token = lexico.nextToken();
+		if(!token.getTokenType().equals(TokenType.TERM))
+		{
+			return false;
+		}
+		
+		return true;
 
 	}
 
 	@Override
-	public void derivaCndb()
+	public boolean derivaExp()
 	{
 		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void derivaAtrib()
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void derivaExp()
-	{
-		// TODO Auto-generated method stub
+		return true;
 
 	}
 
