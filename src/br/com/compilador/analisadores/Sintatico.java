@@ -85,7 +85,7 @@ public class Sintatico implements Isintatico
 			token = lexico.nextToken();
 		}
 		
-		// DERIVA BLOCO
+		// Deriva BLOCO
 		if(!derivaBloco())
 		{
 			gerarError(ErrorType.SINTATICO, token);
@@ -147,16 +147,47 @@ public class Sintatico implements Isintatico
 		if(!token.getTokenType().equals(TokenType.END)) 
 		{
 			token = lexico.nextToken();
-			derivaCmds();
+			if(!derivaCmds())
+			{
+				return false;
+			}
 		}
 		
 		return true;
 	}
 
 	@Override
-	public void derivaCmd()
+	public boolean derivaCmd()
 	{
-		// TODO Auto-generated method stub
+		// Deriva DECL
+		if(token.getTokenType().equals(TokenType.DECLARE))
+		{
+			if(!derivaDecl())
+			{
+				return false;
+			}
+		}
+		// Deriva COND
+		else if(token.getTokenType().equals(TokenType.IF)) 
+		{
+
+		}
+		// Deriva REP
+		else if(token.getTokenType().equals(TokenType.FOR) || token.getTokenType().equals(TokenType.WHILE))
+		{
+
+		}
+		// Deriva ATRIB
+		else if(token.getTokenType().equals(TokenType.ID)) 
+		{
+
+		}
+		else 
+		{
+			return false;
+		}
+		
+		return true;
 
 	}
 
@@ -396,43 +427,26 @@ public class Sintatico implements Isintatico
 	public boolean derivaBloco()
 	{
 		// begin
-		if(!token.getTokenType().equals(TokenType.BEGIN))
+		if(token.getTokenType().equals(TokenType.BEGIN))
 		{
-			// CMD
-			if(token.getTokenType().equals(TokenType.DECLARE))
+			token = lexico.nextToken();
+			
+			// Deriva CMDS
+			if(!derivaCmds())
 			{
-				// Deriva DECL
-				if(!derivaDecl())
-				{
-					return false;
-				}
+				return false;
 			}
-			else if(token.getTokenType().equals(TokenType.IF)) 
-			{
-				// Deriva COND
-			}
-			else if(token.getTokenType().equals(TokenType.FOR) || token.getTokenType().equals(TokenType.WHILE))
-			{
-				// Deriva REP
-			}		
-			else if(token.getTokenType().equals(TokenType.ID)) 
-			{
-				// Deriva ATRIB
-			}
-			else 
+			
+			// end
+			if(!token.getTokenType().equals(TokenType.END))
 			{
 				return false;
 			}
 		}
+		// Deriva CMD
 		else
 		{
-			token = lexico.nextToken();
-			
-			// CMDS
-			derivaCmds();
-			
-			// end
-			if(!token.getTokenType().equals(TokenType.END))
+			if(!derivaCmd())
 			{
 				return false;
 			}
