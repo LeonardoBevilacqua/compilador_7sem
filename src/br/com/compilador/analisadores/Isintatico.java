@@ -3,7 +3,7 @@ package br.com.compilador.analisadores;
 public interface Isintatico
 {
 	void derivaS();
-	void derivaCmds();
+	boolean derivaCmds();
 	void derivaCmd();
 	boolean derivaDecl();
 	void derivaCond();

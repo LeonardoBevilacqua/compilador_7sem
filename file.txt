@@ -1,3 +1,5 @@
 program file;
-	declare nome text;
+	begin
+		declare nome text;
+	end
 end_prog;

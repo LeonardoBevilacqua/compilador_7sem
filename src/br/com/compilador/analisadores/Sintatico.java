@@ -118,10 +118,39 @@ public class Sintatico implements Isintatico
 	}
 
 	@Override
-	public void derivaCmds()
-	{
-		// TODO Auto-generated method stub
-
+	public boolean derivaCmds()
+	{		
+		// Deriva DECL
+		if(token.getTokenType().equals(TokenType.DECLARE))
+		{
+			if(!derivaDecl()) 
+			{
+				return false;
+			}
+		}
+		// Deriva COND
+		else if(token.getTokenType().equals(TokenType.IF))
+		{
+			
+		}
+		// Deriva REP
+		else if(token.getTokenType().equals(TokenType.FOR) || token.getTokenType().equals(TokenType.WHILE))
+		{
+			
+		}
+		// Deriva ATRIB
+		else if(token.getTokenType().equals(TokenType.ID))
+		{
+			
+		}
+		// $		
+		if(!token.getTokenType().equals(TokenType.END)) 
+		{
+			token = lexico.nextToken();
+			derivaCmds();
+		}
+		
+		return true;
 	}
 
 	@Override
@@ -372,6 +401,7 @@ public class Sintatico implements Isintatico
 			// CMD
 			if(token.getTokenType().equals(TokenType.DECLARE))
 			{
+				// Deriva DECL
 				if(!derivaDecl())
 				{
 					return false;
@@ -379,20 +409,16 @@ public class Sintatico implements Isintatico
 			}
 			else if(token.getTokenType().equals(TokenType.IF)) 
 			{
-				
+				// Deriva COND
 			}
+			else if(token.getTokenType().equals(TokenType.FOR) || token.getTokenType().equals(TokenType.WHILE))
+			{
+				// Deriva REP
+			}		
 			else if(token.getTokenType().equals(TokenType.ID)) 
 			{
-				
+				// Deriva ATRIB
 			}
-			else if(token.getTokenType().equals(TokenType.FOR))
-			{
-				
-			}
-			else if(token.getTokenType().equals(TokenType.WHILE))
-			{
-				
-			}				
 			else 
 			{
 				return false;
