@@ -34,35 +34,38 @@ public class Sintatico implements Isintatico
 	 */
 	public void processar()
 	{
-		/*
-		 * Token tokenLido;
-		 * 
-		 * System.out.println("------------------------------------------------");
-		 * System.out.println("( X , Y )|   Token    ||          Lexema       |");
-		 * System.out.println("------------------------------------------------"); do {
-		 * 
-		 * tokenLido = lexico.nextToken(); tokenLido.print();
-		 * 
-		 * } while (tokenLido.getTokenType() != TokenType.EOF);
-		 * System.out.println("------------------------------------------------");
-		 * tabelaSimbolos.printReport(); errorH.gerarRelatorio();
-		 */
-		derivaS();
+		
+		  Token tokenLido;
+		 
+		 System.out.println("------------------------------------------------");
+		 System.out.println("( X , Y )|   Token    ||          Lexema       |");
+		 System.out.println("------------------------------------------------"); do {
+		 
+		 tokenLido = lexico.nextToken(); tokenLido.print();
+		 
+		 } while (tokenLido.getTokenType() != TokenType.EOF);
+		 System.out.println("------------------------------------------------");
+		 tabelaSimbolos.printReport(); errorH.gerarRelatorio();
+		 
+		//derivaS();
 		errorH.gerarRelatorio();
+	}
+	
+	private void nextToken() {
+		token = lexico.nextToken();
 	}
 
 	@Override
 	public void derivaS()
 	{
-		// program
-		token = lexico.nextToken();
+		nextToken();
 		if(!token.getTokenType().equals(TokenType.PROGRAM)) 
 		{
 			gerarError();
 		}
 		else
 		{
-			token = lexico.nextToken();			
+			nextToken();			
 		}
 		
 		// ID
@@ -72,7 +75,7 @@ public class Sintatico implements Isintatico
 		}
 		else
 		{
-			token = lexico.nextToken();
+			nextToken();
 		}
 		
 		// term
@@ -82,12 +85,12 @@ public class Sintatico implements Isintatico
 		}
 		else
 		{
-			token = lexico.nextToken();
+			nextToken();
 		}
 		
-		// Deriva BLOCO
+		// TODO:Deriva BLOCO
 			derivaBloco();
-			token = lexico.nextToken();
+			nextToken();
 		
 		// end_prog
 		if(!token.getTokenType().equals(TokenType.END_PROG))
@@ -96,7 +99,7 @@ public class Sintatico implements Isintatico
 		}
 		else
 		{
-			token = lexico.nextToken();
+			nextToken();
 		}
 		
 		// term
@@ -106,7 +109,7 @@ public class Sintatico implements Isintatico
 		}
 		else
 		{
-			token = lexico.nextToken();
+			nextToken();
 		}
 
 	}
@@ -114,17 +117,17 @@ public class Sintatico implements Isintatico
 	@Override
 	public void derivaCmds()
 	{		
-		// Deriva DECL
+		// TODO:Deriva DECL
 		if(token.getTokenType().equals(TokenType.DECLARE))
 		{
 			derivaDecl();
 		}
-		// Deriva COND
+		// TODO:Deriva COND
 		else if(token.getTokenType().equals(TokenType.IF))
 		{
 			derivaCond();
 		}
-		// Deriva REP
+		// TODO:Deriva REP
 		else if(token.getTokenType().equals(TokenType.FOR) || token.getTokenType().equals(TokenType.WHILE))
 		{
 			
@@ -132,7 +135,7 @@ public class Sintatico implements Isintatico
 		// Deriva ATRIB
 		else if(token.getTokenType().equals(TokenType.ID))
 		{
-			
+			derivaAtrib();
 		}
 		
 		// $
@@ -143,7 +146,7 @@ public class Sintatico implements Isintatico
 		// end		
 		else if(!token.getTokenType().equals(TokenType.END)) 
 		{
-			token = lexico.nextToken();
+			nextToken();
 			derivaCmds();
 		}
 		
@@ -153,17 +156,17 @@ public class Sintatico implements Isintatico
 	@Override
 	public void derivaCmd()
 	{
-		// Deriva DECL
+		// TODO:Deriva DECL
 		if(token.getTokenType().equals(TokenType.DECLARE))
 		{
 			derivaDecl();
 		}
-		// Deriva COND
+		// TODO:Deriva COND
 		else if(token.getTokenType().equals(TokenType.IF)) 
 		{
 			derivaCond();
 		}
-		// Deriva REP
+		// TODO:Deriva REP
 		else if(token.getTokenType().equals(TokenType.FOR) || token.getTokenType().equals(TokenType.WHILE))
 		{
 
@@ -171,7 +174,7 @@ public class Sintatico implements Isintatico
 		// Deriva ATRIB
 		else if(token.getTokenType().equals(TokenType.ID)) 
 		{
-
+			derivaAtrib();
 		}
 		else 
 		{
@@ -192,7 +195,7 @@ public class Sintatico implements Isintatico
 		}
 		else
 		{
-			token = lexico.nextToken();
+			nextToken();
 		}
 
 		// ID
@@ -209,8 +212,7 @@ public class Sintatico implements Isintatico
 				//this.gravaErro(TipoDeErro.SEMANTICO, token, Mensagens.MSG_VARIAVEL_REDECLARADA, false);
 			}*/
 
-			token = lexico.nextToken();
-			//token.setFoiDeclarado(true);
+			nextToken();
 		}
 
 		// type
@@ -220,7 +222,7 @@ public class Sintatico implements Isintatico
 		}
 		else
 		{
-			token = lexico.nextToken();
+			nextToken();
 		}
 
 		// term
@@ -240,29 +242,45 @@ public class Sintatico implements Isintatico
 		{
 			gerarError();
 		}
-		// TODO: finalizar
+		
+		nextToken();
+		// l_par
+		if(!token.getTokenType().equals(TokenType.L_PAR))
+		{
+			gerarError();
+		}
+		
+		nextToken();
+		// Deriva EXPLO
+		derivaExplo();
+		
+		nextToken();
+		// r_par
+		if(!token.getTokenType().equals(TokenType.R_PAR))
+		{
+			gerarError();
+		}
+		
+		nextToken();
+		// then
+		if(!token.getTokenType().equals(TokenType.THEN))
+		{
+			gerarError();
+		}
+		
+		nextToken();
+		// Deriva BLOCO
 		derivaBloco();
-		derivaCndb();
 		
-
-		
-	}
+		nextToken();
+		// Deriva CNDB
+		derivaCndb();		
+	}	
 
 	@Override
 	public void derivaCndb()
 	{
-		// else
-		if(!token.getTokenType().equals(TokenType.ELSE))
-		{
-			gerarError();
-		}
-		// Verifica follow
-		else 
-		{
-			Token bufferToken = token;
-			token = lexico.nextToken();
-
-		}
+		
 		
 	}
 
@@ -279,25 +297,23 @@ public class Sintatico implements Isintatico
 			// TODO: verificar se existe
 		}
 		
+		nextToken();
 		// assign
-		token = lexico.nextToken();
 		if(!token.getTokenType().equals(TokenType.ASSIGN))
 		{
 			gerarError();
 		}
-		// Deriva EXP
-		token = lexico.nextToken();
+		
+		nextToken();
+		// Deriva Exp
 		derivaExp();
 
+		nextToken();
 		// term
-		token = lexico.nextToken();
 		if(!token.getTokenType().equals(TokenType.TERM))
 		{
 			gerarError();
-		}
-		
-		
-
+		}	
 	}
 
 	@Override
@@ -468,9 +484,9 @@ public class Sintatico implements Isintatico
 		// begin
 		if(token.getTokenType().equals(TokenType.BEGIN))
 		{
-			token = lexico.nextToken();
+			nextToken();
 			
-			// Deriva CMDS
+			// TODO:Deriva CMDS
 			derivaCmds();
 			
 			// end
@@ -479,7 +495,7 @@ public class Sintatico implements Isintatico
 				gerarError();
 			}
 		}
-		// Deriva CMD
+		// TODO:Deriva CMD
 		else
 		{
 			derivaCmd();
@@ -493,6 +509,6 @@ public class Sintatico implements Isintatico
 	{
 		Error error = new Error(ErrorType.SINTATICO, token.getLexema(), token.getLinha(), token.getColuna());
 		errorH.registrarErro(error);
-		token = lexico.nextToken();
+		nextToken();
 	}
 }

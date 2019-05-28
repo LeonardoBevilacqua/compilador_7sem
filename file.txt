@@ -1,6 +1,9 @@
 program file;
 	begin
-		declare nome text;
-		nome = "test"
+		if (t) then
+			begin
+				declare nome text;
+				nome = "test";
+			end
 	end
 end_prog;
