@@ -3,7 +3,7 @@ program file;
 		if (t) then
 			begin
 				declare nome text;
-				nome = "test";
+				nome <- "test";
 			end
 	end
 end_prog;
