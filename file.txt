@@ -1,6 +1,6 @@
 program file;
 	begin
 		declare nome text;
-		nome = "test";
+		nome = "test"
 	end
 end_prog;

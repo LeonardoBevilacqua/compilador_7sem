@@ -58,7 +58,7 @@ public class Sintatico implements Isintatico
 		token = lexico.nextToken();
 		if(!token.getTokenType().equals(TokenType.PROGRAM)) 
 		{
-			gerarError(ErrorType.SINTATICO, token);
+			gerarError();
 		}
 		else
 		{
@@ -68,7 +68,7 @@ public class Sintatico implements Isintatico
 		// ID
 		if(!token.getTokenType().equals(TokenType.ID))
 		{
-			gerarError(ErrorType.SINTATICO, token);
+			gerarError();
 		}
 		else
 		{
@@ -78,7 +78,7 @@ public class Sintatico implements Isintatico
 		// term
 		if(!token.getTokenType().equals(TokenType.TERM))
 		{
-			gerarError(ErrorType.SINTATICO, token);
+			gerarError();
 		}
 		else
 		{
@@ -86,19 +86,13 @@ public class Sintatico implements Isintatico
 		}
 		
 		// Deriva BLOCO
-		if(!derivaBloco())
-		{
-			gerarError(ErrorType.SINTATICO, token);
-		}
-		else
-		{
+			derivaBloco();
 			token = lexico.nextToken();
-		}
 		
 		// end_prog
 		if(!token.getTokenType().equals(TokenType.END_PROG))
 		{
-			gerarError(ErrorType.SINTATICO, token);
+			gerarError();
 		}
 		else
 		{
@@ -108,7 +102,7 @@ public class Sintatico implements Isintatico
 		// term
 		if(!token.getTokenType().equals(TokenType.TERM))
 		{
-			gerarError(ErrorType.SINTATICO, token);
+			gerarError();
 		}
 		else
 		{
@@ -118,23 +112,17 @@ public class Sintatico implements Isintatico
 	}
 
 	@Override
-	public boolean derivaCmds()
+	public void derivaCmds()
 	{		
 		// Deriva DECL
 		if(token.getTokenType().equals(TokenType.DECLARE))
 		{
-			if(!derivaDecl()) 
-			{
-				return false;
-			}
+			derivaDecl();
 		}
 		// Deriva COND
 		else if(token.getTokenType().equals(TokenType.IF))
 		{
-			if(!derivaCond())
-			{
-				return false;
-			}
+			derivaCond();
 		}
 		// Deriva REP
 		else if(token.getTokenType().equals(TokenType.FOR) || token.getTokenType().equals(TokenType.WHILE))
@@ -146,37 +134,34 @@ public class Sintatico implements Isintatico
 		{
 			
 		}
-		// $		
-		if(!token.getTokenType().equals(TokenType.END)) 
+		
+		// $
+		if(token.getTokenType().equals(TokenType.EOF))
+		{
+			gerarError();
+		}
+		// end		
+		else if(!token.getTokenType().equals(TokenType.END)) 
 		{
 			token = lexico.nextToken();
-			if(!derivaCmds())
-			{
-				return false;
-			}
+			derivaCmds();
 		}
 		
-		return true;
+		
 	}
 
 	@Override
-	public boolean derivaCmd()
+	public void derivaCmd()
 	{
 		// Deriva DECL
 		if(token.getTokenType().equals(TokenType.DECLARE))
 		{
-			if(!derivaDecl())
-			{
-				return false;
-			}
+			derivaDecl();
 		}
 		// Deriva COND
 		else if(token.getTokenType().equals(TokenType.IF)) 
 		{
-			if(!derivaCond())
-			{
-				return false;
-			}
+			derivaCond();
 		}
 		// Deriva REP
 		else if(token.getTokenType().equals(TokenType.FOR) || token.getTokenType().equals(TokenType.WHILE))
@@ -190,20 +175,20 @@ public class Sintatico implements Isintatico
 		}
 		else 
 		{
-			return false;
+			gerarError();
 		}
 		
-		return true;
+		
 
 	}
 
 	@Override
-	public boolean derivaDecl()
+	public void derivaDecl()
 	{
 		// declare
 		if (!token.getTokenType().equals(TokenType.DECLARE))
 		{
-			return false;
+			gerarError();
 		}
 		else
 		{
@@ -213,14 +198,14 @@ public class Sintatico implements Isintatico
 		// ID
 		if (!token.getTokenType().equals(TokenType.ID))
 		{
-			return false;
+			gerarError();
 		}
 		else
 		{
 			//implementar essa logica
 			/*if (token.foiDeclarado())
 			{
-				gerarError(ErrorType.SINTATICO, token);
+				gerarError();
 				//this.gravaErro(TipoDeErro.SEMANTICO, token, Mensagens.MSG_VARIAVEL_REDECLARADA, false);
 			}*/
 
@@ -231,7 +216,7 @@ public class Sintatico implements Isintatico
 		// type
 		if (!token.getTokenType().equals(TokenType.TYPE))
 		{
-			return false;
+			gerarError();
 		}
 		else
 		{
@@ -241,41 +226,35 @@ public class Sintatico implements Isintatico
 		// term
 		if (!token.getTokenType().equals(TokenType.TERM))
 		{
-			return false;
+			gerarError();
 		}
 		
-		return true;
+		
 	}
 
 	@Override
-	public boolean derivaCond()
+	public void derivaCond()
 	{
 		// if
 		if(!token.getTokenType().equals(TokenType.IF))
 		{
-			return false;
+			gerarError();
 		}
 		// TODO: finalizar
-		else if(!derivaBloco())
-		{
-			return false;
-		}
-		else if(!derivaCndb())
-		{
-			return false;
-		}
+		derivaBloco();
+		derivaCndb();
 		
 
-		return true;
+		
 	}
 
 	@Override
-	public boolean derivaCndb()
+	public void derivaCndb()
 	{
 		// else
 		if(!token.getTokenType().equals(TokenType.ELSE))
 		{
-			return false;
+			gerarError();
 		}
 		// Verifica follow
 		else 
@@ -284,16 +263,16 @@ public class Sintatico implements Isintatico
 			token = lexico.nextToken();
 
 		}
-		return true;
+		
 	}
 
 	@Override
-	public boolean derivaAtrib()
+	public void derivaAtrib()
 	{
 		// id
 		if(!token.getTokenType().equals(TokenType.ID))
 		{
-			return false;
+			gerarError();
 		}
 		else
 		{
@@ -304,30 +283,28 @@ public class Sintatico implements Isintatico
 		token = lexico.nextToken();
 		if(!token.getTokenType().equals(TokenType.ASSIGN))
 		{
-			return false;
+			gerarError();
 		}
 		// Deriva EXP
 		token = lexico.nextToken();
-		if(!derivaExp())
-		{
-			return false;
-		}
+		derivaExp();
+
 		// term
 		token = lexico.nextToken();
 		if(!token.getTokenType().equals(TokenType.TERM))
 		{
-			return false;
+			gerarError();
 		}
 		
-		return true;
+		
 
 	}
 
 	@Override
-	public boolean derivaExp()
+	public void derivaExp()
 	{
 		// TODO Auto-generated method stub
-		return true;
+		
 
 	}
 
@@ -486,7 +463,7 @@ public class Sintatico implements Isintatico
 	}
 
 	@Override
-	public boolean derivaBloco()
+	public void derivaBloco()
 	{
 		// begin
 		if(token.getTokenType().equals(TokenType.BEGIN))
@@ -494,33 +471,28 @@ public class Sintatico implements Isintatico
 			token = lexico.nextToken();
 			
 			// Deriva CMDS
-			if(!derivaCmds())
-			{
-				return false;
-			}
+			derivaCmds();
 			
 			// end
 			if(!token.getTokenType().equals(TokenType.END))
 			{
-				return false;
+				gerarError();
 			}
 		}
 		// Deriva CMD
 		else
 		{
-			if(!derivaCmd())
-			{
-				return false;
-			}
+			derivaCmd();
 		}
 				
 		
-		return true;
+		
 	}
 
-	private void gerarError(ErrorType erroType, Token token)
+	private void gerarError()
 	{
-		Error error = new Error(erroType, token.getLexema(), token.getLinha(), token.getColuna());
+		Error error = new Error(ErrorType.SINTATICO, token.getLexema(), token.getLinha(), token.getColuna());
 		errorH.registrarErro(error);
+		token = lexico.nextToken();
 	}
 }

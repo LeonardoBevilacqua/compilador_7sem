@@ -3,13 +3,13 @@ package br.com.compilador.analisadores;
 public interface Isintatico
 {
 	void derivaS();
-	boolean derivaCmds();
-	boolean derivaCmd();
-	boolean derivaDecl();
-	boolean derivaCond();
-	boolean derivaCndb();
-	boolean derivaAtrib();
-	boolean derivaExp();
+	void derivaCmds();
+	void derivaCmd();
+	void derivaDecl();
+	void derivaCond();
+	void derivaCndb();
+	void derivaAtrib();
+	void derivaExp();
 	void derivaFID();
 	void derivaFOPNum();
 	void derivaFEXPNum_1();
@@ -32,5 +32,5 @@ public interface Isintatico
 	void derivaEXPNum();
 	void derivaREPW();
 	void derivaExplo();
-	boolean derivaBloco();
+	void derivaBloco();
 }
