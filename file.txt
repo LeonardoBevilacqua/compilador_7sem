@@ -5,5 +5,8 @@ program file;
 				declare nome text;
 				nome <- "test";
 			end
+		else
+			if (t) then
+				nome <- "r";
 	end
 end_prog;

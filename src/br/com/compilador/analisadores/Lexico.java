@@ -29,6 +29,7 @@ public class Lexico
 	private StringBuilder lexema = null;
 	private char caracterLido = ' ';
 	private long coluna_inicial;
+	private Token bufferToken = null;
 	
 	public Lexico(String filename) throws Exception {
 		errorHandler = ErrorHandler.getInstance();
@@ -48,6 +49,12 @@ public class Lexico
 		
 		try
 		{
+			if(bufferToken != null)
+			{
+				tokenDeRetorno = bufferToken;
+				bufferToken = null;
+			}
+			
 			while (tokenDeRetorno == null)
 			{
 				lexema = new StringBuilder();
@@ -411,5 +418,8 @@ public class Lexico
 	{
 		Error error = new Error(ErrorType.LEXICO, lexema, fileLoader.getLine(), fileLoader.getColumn());
 		errorHandler.registrarErro(error);
+	}
+	public void saveBuffer(Token token) {
+		this.bufferToken = token;
 	}
 }

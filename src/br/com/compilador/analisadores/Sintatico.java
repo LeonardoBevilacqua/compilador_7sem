@@ -146,6 +146,7 @@ public class Sintatico implements Isintatico
 			nextToken();
 			derivaCmds();
 		}		
+		lexico.saveBuffer(token);
 	}
 
 	@Override
@@ -263,7 +264,17 @@ public class Sintatico implements Isintatico
 	@Override
 	public void derivaCndb()
 	{
-		// TODO: deriva CNDB		
+		if(!token.getTokenType().equals(TokenType.ELSE))
+		{
+			lexico.saveBuffer(token);
+		}
+		else
+		{
+			token = lexico.nextToken();
+			// Deriva BLOCO
+			derivaBloco();
+			
+		}
 	}
 
 	@Override
@@ -464,25 +475,22 @@ public class Sintatico implements Isintatico
 		// begin
 		if(token.getTokenType().equals(TokenType.BEGIN))
 		{
-			nextToken();
-			
-			// TODO:Deriva CMDS
+			nextToken();			
+			// Deriva CMDS
 			derivaCmds();
 			
+			nextToken();
 			// end
 			if(!token.getTokenType().equals(TokenType.END))
 			{
 				gerarError();
 			}
 		}
-		// TODO:Deriva CMD
 		else
 		{
+			// Deriva CMD
 			derivaCmd();
-		}
-				
-		
-		
+		}		
 	}
 
 	private void gerarError()
