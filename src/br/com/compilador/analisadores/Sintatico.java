@@ -312,20 +312,81 @@ public class Sintatico implements Isintatico
 	@Override
 	public void derivaExp()
 	{
-		// TODO Auto-generated method stub
+		if(token.getTokenType().equals(TokenType.LOGIC_VAL))
+		{
+			// Deriva FVALLOG
+			derivaFValLog();
+		}
+		else if(token.getTokenType().equals(TokenType.ID))
+		{
+			nextToken();
+			// Deriva FID
+			derivaFID();
+		}
+		else if(token.getTokenType().equals(TokenType.NUM_INT))
+		{
+			// Deriva FNUMINT
+			derivaFNUMInt();
+		}
+		else if(token.getTokenType().equals(TokenType.NUM_FLOAT))
+		{
+			// Deriva FNUMFLOAT
+			derivaFNumFloat();
+		}
+		else if(token.getTokenType().equals(TokenType.L_PAR))
+		{
+			// Deriva FLPAR
+			derivaFLPar();
+		}
+		else if(!token.getTokenType().equals(TokenType.LITERAL))
+		{
+			gerarError();
+		}
 	}
 
 	@Override
 	public void derivaFID()
 	{
-		// TODO Auto-generated method stub
+		if(token.getTokenType().equals(TokenType.LOGIC_OP))
+		{
+			// Deriva FVALLOG
+			derivaFValLog();
+		}
+		else if(token.getTokenType().equals(TokenType.ARIT_AS) | token.getTokenType().equals(TokenType.ARIT_MD))
+		{
+			// Deriva OPNUM
+			derivaOPnum();
+			
+			nextToken();
+			// Deriva FOPNUM
+			derivaFOPNum();
+		}
 
 	}
 
 	@Override
 	public void derivaFOPNum()
 	{
-		// TODO Auto-generated method stub
+		
+		// Deriva EXPNUM
+		if(token.getTokenType().equals(TokenType.L_PAR) |
+				token.getTokenType().equals(TokenType.ID) |
+				token.getTokenType().equals(TokenType.NUM_INT) |
+				token.getTokenType().equals(TokenType.NUM_FLOAT))
+		{
+			derivaEXPNum();
+		}else 
+		{
+			gerarError();
+		}
+		
+		
+		nextToken();
+		if(token.getTokenType().equals(TokenType.RELOP))
+		{
+			// Deriva FEXPNUM_1
+			derivaFEXPNum_1();
+		}
 
 	}
 
