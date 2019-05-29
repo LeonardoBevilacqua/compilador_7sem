@@ -1,12 +1,12 @@
 program file;
 	begin
-		if (t) then
+		if (t $eq "test") then
 			begin
 				declare nome text;
 				nome <- "test";
 			end
 		else
-			if (t) then
-				nome <- "r";
+		#	if (true) then
+				nome <- "r";#
 	end
 end_prog;
