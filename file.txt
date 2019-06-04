@@ -1,12 +1,9 @@
 program file;
 	begin
-		if (t $eq "test") then
+		if (num $eq 5) then
 			begin
 				declare nome text;
 				nome <- "test";
 			end
-		else
-		#	if (true) then
-				nome <- "r";#
 	end
 end_prog;

@@ -234,7 +234,6 @@ public class Sintatico implements Isintatico
 			gerarError();
 		}
 		
-		nextToken();
 		// Deriva EXPLO
 		derivaExplo();
 		
@@ -436,13 +435,15 @@ public class Sintatico implements Isintatico
 	@Override
 	public void derivaFNumFloat()
 	{
-		// Deriva OPNUM
-		derivaOPnum();
-		
-		nextToken();
-		// Deriva FOPNUM_2
-		derivaFOPNum2();
-
+		if(token.getTokenType().equals(TokenType.ARIT_AS) || token.getTokenType().equals(TokenType.ARIT_AS))
+		{
+			// Deriva OPNUM
+			derivaOPnum();
+			
+			nextToken();
+			// Deriva FOPNUM_2
+			derivaFOPNum2();
+		}
 	}
 
 	@Override
@@ -510,10 +511,15 @@ public class Sintatico implements Isintatico
 	{
 		if(token.getTokenType().equals(TokenType.RELOP))
 		{
-			nextToken();
 			// Deriva FVALLOG
 			derivaFValLog();			
 		}
+		else if(token.getTokenType().equals(TokenType.RELOP))
+		{
+			nextToken();
+			// Deriva EXPNUM
+			derivaEXPNum();
+		}		
 		else if(token.getTokenType().equals(TokenType.ARIT_AS) || token.getTokenType().equals(TokenType.ARIT_MD))
 		{
 			nextToken();
@@ -536,12 +542,6 @@ public class Sintatico implements Isintatico
 				gerarError();
 			}
 		}
-		else if(token.getTokenType().equals(TokenType.RELOP))
-		{
-			nextToken();
-			// Deriva EXPNUM
-			derivaEXPNum();
-		}
 		else
 		{
 			gerarError();
@@ -551,18 +551,31 @@ public class Sintatico implements Isintatico
 	@Override
 	public void derivaFValLog()
 	{
+		nextToken();
 		if(token.getTokenType().equals(TokenType.LOGIC_OP))
 		{
 			// Deriva EXPLO
 			derivaExplo();
+		}
+		else
+		{
+			lexico.saveBuffer(token);
 		}
 	}
 
 	@Override
 	public void derivaXEXPNum()
 	{
-		// TODO Auto-generated method stub
-
+		if(token.getTokenType().equals(TokenType.ARIT_AS) ||
+				token.getTokenType().equals(TokenType.ARIT_MD))
+		{
+			// Deriva OPNUM
+			derivaOPnum();
+			
+			nextToken();
+			// Deriva EXPNUM
+			derivaEXPNum();
+		}	
 	}
 
 	@Override
@@ -589,14 +602,64 @@ public class Sintatico implements Isintatico
 	@Override
 	public void derivaRep()
 	{
-		// TODO Auto-generated method stub
+		if(token.getTokenType().equals(TokenType.FOR))
+		{
+			// Deriva REPF
+			derivaRepf();
+		}
+		else if(token.getTokenType().equals(TokenType.WHILE)) 
+		{
+			// Deriva REPW
+			derivaREPW();
+		}
+		else 
+		{
+			gerarError();
+		}
 
 	}
 
 	@Override
 	public void derivaRepf()
 	{
-		// TODO Auto-generated method stub
+		// FOR
+		if(!token.getTokenType().equals(TokenType.FOR))
+		{
+			gerarError();
+		}
+		
+		nextToken();
+		// ID
+		if(!token.getTokenType().equals(TokenType.ID))
+		{
+			gerarError();
+		}
+		
+		nextToken();
+		// attrib
+		if(!token.getTokenType().equals(TokenType.ASSIGN))
+		{
+			gerarError();
+		}
+		
+		nextToken();
+		// Deriva EXPNum
+		derivaEXPNum();
+		
+		nextToken();
+		// TO
+		if(!token.getTokenType().equals(TokenType.TO))
+		{
+			gerarError();
+		}
+		
+		nextToken();
+		// Deriva EXPNum
+		derivaEXPNum();
+		
+		nextToken();
+		// Deriva BLOCO
+		derivaBloco();
 
 	}
 
@@ -604,13 +667,29 @@ public class Sintatico implements Isintatico
 	public void derivaEXPNum()
 	{
 		// TODO Auto-generated method stub
-		if(token.getTokenType().equals(TokenType.L_PAR) |
-				token.getTokenType().equals(TokenType.ID) |
+		if(token.getTokenType().equals(TokenType.ID) |
 				token.getTokenType().equals(TokenType.NUM_INT) |
 				token.getTokenType().equals(TokenType.NUM_FLOAT))
 		{
+			// Deriva VAL
+			derivaVal();
 			
-		}else 
+			nextToken();
+			// Deriva XEMPNUM
+			derivaXEXPNum();
+		}
+		else if(token.getTokenType().equals(TokenType.L_PAR))
+		{
+			nextToken();
+			// Deriva EXPNUM
+			derivaEXPNum();
+			
+			if(!token.getTokenType().equals(TokenType.R_PAR))
+			{
+				gerarError();
+			}
+		}
+		else 
 		{
 			gerarError();
 		}
@@ -620,16 +699,40 @@ public class Sintatico implements Isintatico
 	@Override
 	public void derivaREPW()
 	{
-		// TODO Auto-generated method stub
-
+		// While
+		if(!token.getTokenType().equals(TokenType.WHILE))
+		{
+			gerarError();
+		}
+		
+		nextToken();
+		// l_par
+		if(!token.getTokenType().equals(TokenType.L_PAR))
+		{
+			gerarError();
+		}
+		
+		// Deriva Explo
+		derivaExplo();
+		
+		nextToken();
+		// r_par
+		if(!token.getTokenType().equals(TokenType.R_PAR))
+		{
+			gerarError();
+		}
+		
+		nextToken();
+		// Deriva BLOCO
+		derivaBloco();
 	}
 
 	@Override
 	public void derivaExplo()
 	{
+		nextToken();
 		if(token.getTokenType().equals(TokenType.LOGIC_VAL))
 		{
-			nextToken();
 			// Deriva FVALLOG
 			derivaFValLog();
 		}
