@@ -534,15 +534,17 @@ public class Sintatico implements Isintatico
 				derivaEXPNum();
 				
 				nextToken();
-				if(token.getTokenType().equals(TokenType.RELOP))
-				{
-					// Deriva EXPNUM
-					derivaEXPNum();
-				}
-				else
+				if(!token.getTokenType().equals(TokenType.RELOP))
 				{
 					gerarError();
 				}
+				// Deriva EXPNUM
+				derivaEXPNum();
+			}
+			else if(token.getTokenType().equals(TokenType.RELOP))
+			{
+				// Deriva EXPNUM
+				derivaEXPNum();
 			}
 		}
 		else
@@ -577,7 +579,11 @@ public class Sintatico implements Isintatico
 			
 			// Deriva EXPNUM
 			derivaEXPNum();
-		}	
+		}
+		else
+		{
+			lexico.saveBuffer(token);
+		}
 	}
 
 	@Override
