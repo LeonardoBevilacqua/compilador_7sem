@@ -14,6 +14,7 @@ import br.com.compilador.TabSimbolos;
 import br.com.compilador.token.Token;
 import br.com.compilador.token.TokenType;
 import br.com.compilador.utils.ArquivoNaoEncontradoException;
+import br.com.compilador.utils.Error;
 import br.com.compilador.utils.ErrorHandler;
 import br.com.compilador.utils.ErrorType;
 import br.com.compilador.utils.FileLoader;
@@ -28,6 +29,7 @@ public class Lexico
 	private StringBuilder lexema = null;
 	private char caracterLido = ' ';
 	private long coluna_inicial;
+	private Token bufferToken = null;
 	
 	public Lexico(String filename) throws Exception {
 		errorHandler = ErrorHandler.getInstance();
@@ -47,6 +49,12 @@ public class Lexico
 		
 		try
 		{
+			if(bufferToken != null)
+			{
+				tokenDeRetorno = bufferToken;
+				bufferToken = null;
+			}
+			
 			while (tokenDeRetorno == null)
 			{
 				lexema = new StringBuilder();
@@ -156,7 +164,7 @@ public class Lexico
 
 					} else {
 						addCaractereLexema();
-						errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+						gerarError(lexema.toString());
 						lexema.setLength(0);
 						break;
 					}
@@ -165,7 +173,7 @@ public class Lexico
 				if (lexema.length() > 0){
 					if (lexema.charAt(lexema.length() - 1) == '.') {
 						addCaractereLexema();
-						errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+						gerarError(lexema.toString());
 						break;
 					} else {
 						return gerarToken(TokenType.NUM_FLOAT);
@@ -193,7 +201,7 @@ public class Lexico
 	        
 	        if(!(caracterLido == '+' || caracterLido == '-')) 
 	        {
-	            errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+	            gerarError(lexema.toString());
 	            return null;
 	        }
 	        
@@ -208,7 +216,7 @@ public class Lexico
     	        }
             }else {
             	addCaractereLexema();
-	        	errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+	        	gerarError(lexema.toString());
 	            return null;
             }
 
@@ -218,7 +226,7 @@ public class Lexico
 	    catch(Exception e)
 	    {
 	    	if(!tokenValido) {
-	    		errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+	    		gerarError(lexema.toString());
 		        return null;
 	    	}
 	    	return gerarToken(tokenType);	        
@@ -246,7 +254,7 @@ public class Lexico
 				else
 				{
 					addCaractereLexema();
-					errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+					gerarError(lexema.toString());
 					lexema.setLength(0);
 				}
 			}
@@ -262,7 +270,7 @@ public class Lexico
 				else
 				{
 					addCaractereLexema();
-					errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+					gerarError(lexema.toString());
 					lexema.setLength(0);
 				}
 			}
@@ -278,21 +286,21 @@ public class Lexico
 				else
 				{
 					addCaractereLexema();
-					errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+					gerarError(lexema.toString());
 					lexema.setLength(0);
 				}
 			}
 			else
 			{
 				addCaractereLexema();
-				errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+				gerarError(lexema.toString());
 				lexema.setLength(0);
 			}
 		}
 		catch (Exception e)
 		{
         	fileLoader.resetLastChar();
-        	errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+        	gerarError(lexema.toString());
 		}
 		return null;
 	}
@@ -318,7 +326,7 @@ public class Lexico
 		}
         catch (Exception e)
 		{
-			errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+			gerarError(lexema.toString());
 			lexema.setLength(0);
 		}
         
@@ -343,13 +351,13 @@ public class Lexico
 			else
 			{
 				addCaractereLexema();
-				errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+				gerarError(lexema.toString());
 				lexema.setLength(0);
 			}
 		}
 	    catch (Exception e)
 		{
-			errorHandler.registrarErroLexico(ErrorType.LEXICO, lexema.toString(), fileLoader.getLine(), fileLoader.getColumn());
+			gerarError(lexema.toString());
 			lexema.setLength(0);
 		}
 	    
@@ -384,7 +392,7 @@ public class Lexico
 			try {
 				caracterLido = fileLoader.getNextChar();
 			} catch (Exception e) {
-				errorHandler.registrarErroLexico(ErrorType.LEXICO, "Sequencia de comentários", fileLoader.getLine(), fileLoader.getColumn());
+				gerarError("Sequencia de comentários");
 				break;
 			} 
 		} while (caracterLido != '#');
@@ -404,5 +412,14 @@ public class Lexico
 	private Token gerarToken(TokenType tokenType)
 	{
 		return new Token(tokenType, lexema.toString(), fileLoader.getLine(), coluna_inicial);
+	}
+	
+	private void gerarError(String lexema)
+	{
+		Error error = new Error(ErrorType.LEXICO, lexema, fileLoader.getLine(), fileLoader.getColumn());
+		errorHandler.registrarErro(error);
+	}
+	public void saveBuffer(Token token) {
+		this.bufferToken = token;
 	}
 }

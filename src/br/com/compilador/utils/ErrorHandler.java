@@ -9,44 +9,44 @@ package br.com.compilador.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ErrorHandler {
+public class ErrorHandler
+{
 
 	private static ErrorHandler instance = new ErrorHandler();
-	private List<String> errosLexicos = new ArrayList<String>();
-	
+	private List<Error> erros = new ArrayList<Error>();
+
 	/**
-	* Metodo responsavel por registrar erros lexicos
-	*/
-	public void registrarErroLexico(ErrorType errorType, String lexema, long linha, long coluna)
+	 * Metodo responsavel por registrar erros
+	 */
+	public void registrarErro(Error error)
 	{
-		String erroLexico = "Lexema errado: "+lexema+" | Tipo do Erro: "+errorType+" Linha: "+linha+" Coluna: "+coluna;
-		errosLexicos.add(erroLexico);
+		erros.add(error);
 	}
-	
-	public void gerarRelatorioLexico()
+
+	public void gerarRelatorio()
 	{
 		cabecalhoRelatorioLexico();
-		
-		for (String erroLexico : errosLexicos)
+
+		for (Error erro : erros)
 		{
-			System.out.println(erroLexico);
+			System.out.println(erro.toString());
 		}
 	}
-	
+
 	/**
-	* Metodo responsavel por imprimir o cabeçalho de erros
-	*/
+	 * Metodo responsavel por imprimir o cabeçalho de erros
+	 */
 	private void cabecalhoRelatorioLexico()
 	{
 		System.out.println("\n---------------------------------------");
-		System.out.printf("|%25s %12s","Erros","|");
+		System.out.printf("|%25s %12s", "Erros", "|");
 		System.out.println("\n---------------------------------------");
 	}
-	
+
 	/**
-	* Metodo responsavel por retornar a instancia unica da classe
-	*/
-	public static ErrorHandler getInstance() 
+	 * Metodo responsavel por retornar a instancia unica da classe
+	 */
+	public static ErrorHandler getInstance()
 	{
 		return instance;
 	}
