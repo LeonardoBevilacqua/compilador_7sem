@@ -4,6 +4,6 @@ program file;
 			begin
 				declare nome text;
 				nome <- "test";
-			end
+			en
 	end
 end_prog;

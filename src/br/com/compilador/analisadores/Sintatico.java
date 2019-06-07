@@ -6,6 +6,9 @@
 */
 package br.com.compilador.analisadores;
 
+import java.util.Arrays;
+import java.util.List;
+
 import br.com.compilador.FirstFollowTables;
 import br.com.compilador.TabSimbolos;
 import br.com.compilador.token.Token;
@@ -71,21 +74,21 @@ public class Sintatico implements Isintatico
 		
 		if(!firstFollow.getFirst().get("S").contains(TokenType.PROGRAM)) 
 		{
-			gerarError();
+			gerarError(firstFollow.getFirst().get("S"));
 		}
 		
 		nextToken();
 		// ID
 		if(!token.getTokenType().equals(TokenType.ID))
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.ID));
 		}
 		
 		nextToken();
 		// term
 		if(!token.getTokenType().equals(TokenType.TERM))
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.TERM));
 		}
 				
 		// Deriva BLOCO
@@ -95,20 +98,20 @@ public class Sintatico implements Isintatico
 		// end_prog
 		if(!token.getTokenType().equals(TokenType.END_PROG))
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.END_PROG));
 		}
 		
 		nextToken();
 		// term
 		if(!token.getTokenType().equals(TokenType.TERM))
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.TERM));
 		}
 
 		nextToken();
 		// EOF
 		if(!token.getTokenType().equals(TokenType.EOF)) {
-			gerarError();
+			gerarError(Arrays.asList(TokenType.EOF));
 		}
 
 	}
@@ -141,7 +144,7 @@ public class Sintatico implements Isintatico
 				derivaAtrib();
 				break;
 			default:
-				gerarError();
+				gerarError(firstFollow.getFirst().get("cmds"));
 				break;
 			}			
 		}		
@@ -149,7 +152,7 @@ public class Sintatico implements Isintatico
 		// $
 		if(token.getTokenType().equals(TokenType.EOF))
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.END));
 		}
 		// end		
 		else if(!token.getTokenType().equals(TokenType.END)) 
@@ -184,7 +187,7 @@ public class Sintatico implements Isintatico
 		}
 		else 
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.ID));
 		}
 	}
 
@@ -195,7 +198,7 @@ public class Sintatico implements Isintatico
 		// ID
 		if (!token.getTokenType().equals(TokenType.ID))
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.ID));
 		}
 		else
 		{
@@ -211,14 +214,14 @@ public class Sintatico implements Isintatico
 		// type
 		if (!token.getTokenType().equals(TokenType.TYPE))
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.TYPE));
 		}
 
 		nextToken();
 		// term
 		if (!token.getTokenType().equals(TokenType.TERM))
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.TERM));
 		}
 	}
 
@@ -229,7 +232,7 @@ public class Sintatico implements Isintatico
 		// l_par
 		if(!token.getTokenType().equals(TokenType.L_PAR))
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.L_PAR));
 		}
 		
 		// Deriva EXPLO
@@ -239,14 +242,14 @@ public class Sintatico implements Isintatico
 		// r_par
 		if(!token.getTokenType().equals(TokenType.R_PAR))
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.R_PAR));
 		}
 		
 		nextToken();
 		// then
 		if(!token.getTokenType().equals(TokenType.THEN))
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.THEN));
 		}
 		
 		// Deriva BLOCO
@@ -281,7 +284,7 @@ public class Sintatico implements Isintatico
 		// assign
 		if(!token.getTokenType().equals(TokenType.ASSIGN))
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.ASSIGN));
 		}
 				
 		// Deriva Exp
@@ -291,7 +294,7 @@ public class Sintatico implements Isintatico
 		// term
 		if(!token.getTokenType().equals(TokenType.TERM))
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.TERM));
 		}	
 	}
 
@@ -325,14 +328,14 @@ public class Sintatico implements Isintatico
 					derivaFLPar();
 					break;
 				default:
-					gerarError();
+					gerarError(firstFollow.getFirst().get("exp"));
 					break;
 				}
 			}
 		}
 		else
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.LITERAL));
 		}
 	}
 
@@ -357,7 +360,7 @@ public class Sintatico implements Isintatico
 		}
 		else 
 		{
-			gerarError();
+			gerarError(firstFollow.getFirst().get("fid"));
 		}
 		
 
@@ -377,7 +380,7 @@ public class Sintatico implements Isintatico
 		}
 		else
 		{
-			gerarError();
+			gerarError(firstFollow.getFirst().get("fopnum"));
 		}
 	}
 
@@ -420,7 +423,7 @@ public class Sintatico implements Isintatico
 		}
 		else
 		{
-			gerarError();
+			gerarError(firstFollow.getFirst().get("fopnum1"));
 		}
 	}
 
@@ -463,7 +466,7 @@ public class Sintatico implements Isintatico
 		}
 		else 
 		{
-			gerarError();
+			gerarError(firstFollow.getFirst().get("fopnum2"));
 		}
 	}
 
@@ -499,7 +502,7 @@ public class Sintatico implements Isintatico
 		}
 		else
 		{
-			gerarError();
+			gerarError(firstFollow.getFirst().get("fexpnum"));
 		}
 	}
 
@@ -536,7 +539,7 @@ public class Sintatico implements Isintatico
 				nextToken();
 				if(!token.getTokenType().equals(TokenType.RELOP))
 				{
-					gerarError();
+					gerarError(Arrays.asList(TokenType.RELOP));
 				}
 				// Deriva EXPNUM
 				derivaEXPNum();
@@ -549,7 +552,7 @@ public class Sintatico implements Isintatico
 		}
 		else
 		{
-			gerarError();
+			gerarError(firstFollow.getFirst().get("fid1"));
 		}
 	}
 
@@ -592,7 +595,7 @@ public class Sintatico implements Isintatico
 		nextToken();
 		if(!firstFollow.getFirst().get("opnum").contains(token.getTokenType()))
 		{
-			gerarError();
+			gerarError(firstFollow.getFirst().get("opnum"));
 		}
 	}
 
@@ -601,7 +604,7 @@ public class Sintatico implements Isintatico
 	{
 		if(!firstFollow.getFirst().get("val").contains(token.getTokenType()))
 		{
-			gerarError();
+			gerarError(firstFollow.getFirst().get("val"));
 		}
 	}
 
@@ -620,7 +623,7 @@ public class Sintatico implements Isintatico
 		}
 		else 
 		{
-			gerarError();
+			gerarError(firstFollow.getFirst().get("rep"));
 		}
 
 	}
@@ -632,14 +635,14 @@ public class Sintatico implements Isintatico
 		// ID
 		if(!token.getTokenType().equals(TokenType.ID))
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.ID));
 		}
 		
 		nextToken();
 		// attrib
 		if(!token.getTokenType().equals(TokenType.ASSIGN))
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.ASSIGN));
 		}
 				
 		// Deriva EXPNum
@@ -649,7 +652,7 @@ public class Sintatico implements Isintatico
 		// TO
 		if(!token.getTokenType().equals(TokenType.TO))
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.TO));
 		}
 		
 		// Deriva EXPNum
@@ -681,13 +684,13 @@ public class Sintatico implements Isintatico
 				nextToken();
 				if(!token.getTokenType().equals(TokenType.R_PAR))
 				{
-					gerarError();
+					gerarError(Arrays.asList(TokenType.R_PAR));
 				}
 			}
 		}
 		else
 		{
-			gerarError();
+			gerarError(firstFollow.getFirst().get("expnum"));
 		}
 	}
 
@@ -698,7 +701,7 @@ public class Sintatico implements Isintatico
 		// l_par
 		if(!token.getTokenType().equals(TokenType.L_PAR))
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.L_PAR));
 		}
 		
 		// Deriva Explo
@@ -708,7 +711,7 @@ public class Sintatico implements Isintatico
 		// r_par
 		if(!token.getTokenType().equals(TokenType.R_PAR))
 		{
-			gerarError();
+			gerarError(Arrays.asList(TokenType.R_PAR));
 		}
 		
 		// Deriva BLOCO
@@ -740,7 +743,7 @@ public class Sintatico implements Isintatico
 				nextToken();
 				if(!token.getTokenType().equals(TokenType.RELOP))
 				{
-					gerarError();
+					gerarError(Arrays.asList(TokenType.RELOP));
 				}
 				// Deriva EXPNUM
 				derivaEXPNum();
@@ -755,7 +758,7 @@ public class Sintatico implements Isintatico
 				nextToken();
 				if(!token.getTokenType().equals(TokenType.RELOP))
 				{
-					gerarError();
+					gerarError(Arrays.asList(TokenType.RELOP));
 				}
 				// Deriva EXPNUM
 				derivaEXPNum();
@@ -767,13 +770,13 @@ public class Sintatico implements Isintatico
 				nextToken();
 				if(!token.getTokenType().equals(TokenType.R_PAR))
 				{			
-					gerarError();
+					gerarError(Arrays.asList(TokenType.R_PAR));
 				}
 				
 				nextToken();
 				if(!token.getTokenType().equals(TokenType.RELOP))
 				{
-					gerarError();
+					gerarError(Arrays.asList(TokenType.RELOP));
 				}
 				
 				// Deriva EXPNUM
@@ -781,7 +784,7 @@ public class Sintatico implements Isintatico
 				break;
 
 			default:
-				gerarError();
+				gerarError(firstFollow.getFirst().get("explo"));
 				break;
 			}
 		}
@@ -792,7 +795,7 @@ public class Sintatico implements Isintatico
 	{
 		nextToken();
 		if(!firstFollow.getFirst().get("bloco").contains(token.getTokenType())) {
-			gerarError();
+			gerarError(firstFollow.getFirst().get("bloco"));
 		}
 		
 		// begin
@@ -805,7 +808,7 @@ public class Sintatico implements Isintatico
 			// end
 			if(!token.getTokenType().equals(TokenType.END))
 			{
-				gerarError();
+				gerarError(Arrays.asList(TokenType.END));
 			}
 		}
 		else if(firstFollow.getFirst().get("cmd").contains(token.getTokenType()))
@@ -815,14 +818,23 @@ public class Sintatico implements Isintatico
 		}
 		else 
 		{
-			gerarError();
+			gerarError(firstFollow.getFirst().get("bloco"));
 		}
 	}
 
-	private void gerarError()
+	private void gerarError(List<TokenType> tokenEsperado)
 	{
-		Error error = new Error(ErrorType.SINTATICO, token.getLexema(), token.getLinha(), token.getColuna());
-		errorH.registrarErro(error);
-		nextToken();
+		if(token.getTokenType().equals(TokenType.EOF))
+		{
+			return;
+		}
+		do
+		{
+			Error error = new Error(ErrorType.SINTATICO, token.getLexema(), token.getLinha(), token.getColuna());
+			errorH.registrarErro(error);
+			nextToken();			
+		}
+		while(!tokenEsperado.contains(token.getTokenType()) && !token.getTokenType().equals(TokenType.EOF));
+
 	}
 }
