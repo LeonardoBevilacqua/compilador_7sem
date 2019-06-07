@@ -16,9 +16,11 @@ public class TabSimbolos {
 
 	private static TabSimbolos instance = new TabSimbolos();
 	private Map<String, Token> tab;
+	private Map<String, Boolean> idTokens;
 	
 	private TabSimbolos() {
 		tab = new HashMap<String, Token>();
+		idTokens = new HashMap<String, Boolean>();
 
 		Token tokenTrue = new Token(TokenType.LOGIC_VAL, "true");
 		Token tokenFalse = new Token(TokenType.LOGIC_VAL, "false");
@@ -80,6 +82,11 @@ public class TabSimbolos {
 			token.setColuna(coluna);
 		} else {
 			token = new Token(TokenType.ID, lexema, linha, coluna);
+			if(!idTokens.containsKey(lexema))
+			{
+				idTokens.put(lexema, false);
+			}
+			
 		}
 
 		return token;
@@ -104,4 +111,10 @@ public class TabSimbolos {
 		System.out.println("|      Token      ||      Lexema      |");
 		System.out.println("---------------------------------------");
 	}
+
+	public Map<String, Boolean> getIdTokens() {
+		return idTokens;
+	}
+	
+	
 }

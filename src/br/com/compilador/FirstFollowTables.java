@@ -68,6 +68,6 @@ public class FirstFollowTables {
 		first.put("expnum", Arrays.asList(TokenType.L_PAR, TokenType.ID, TokenType.NUM_INT, TokenType.NUM_FLOAT));
 		first.put("repw", Arrays.asList(TokenType.WHILE));
 		first.put("explo", Arrays.asList(TokenType.LOGIC_VAL, TokenType.ID, TokenType.NUM_INT, TokenType.NUM_FLOAT, TokenType.L_PAR));
-		first.put("bloco", Arrays.asList(TokenType.BEGIN, TokenType.DECLARE, TokenType.IF, TokenType.FOR, TokenType.WHILE));		
+		first.put("bloco", Arrays.asList(TokenType.BEGIN, TokenType.DECLARE, TokenType.ID, TokenType.FOR, TokenType.WHILE));		
 	}
 }

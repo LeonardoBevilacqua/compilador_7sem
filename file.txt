@@ -1,9 +1,19 @@
-program file;
+program file;	
 	begin
-		if (num $eq 5) then
+		declare nome text;
+		declare idade int;
+		declare status text;
+		
+		nome <- "leonardo";
+		idade <- "21";
+		
+		if(idade $gt 18) then
+			begin				
+				status <- "Maior de idade";
+			end
+		else
 			begin
-				declare nome text;
-				nome <- "test";
-			en
+				status <- "Menor de idade";
+			end
 	end
 end_prog;

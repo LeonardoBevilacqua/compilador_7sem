@@ -202,12 +202,14 @@ public class Sintatico implements Isintatico
 		}
 		else
 		{
-			//TODO: implementar essa logica
-			/*if (token.foiDeclarado())
+			if(!tabelaSimbolos.getIdTokens().get(token.getLexema()))
 			{
-				gerarError();
-				//this.gravaErro(TipoDeErro.SEMANTICO, token, Mensagens.MSG_VARIAVEL_REDECLARADA, false);
-			}*/
+				tabelaSimbolos.getIdTokens().put(token.getLexema(), true);				
+			}
+			else
+			{
+				tokenErro(true);
+			}
 		}
 
 		nextToken();
@@ -279,6 +281,10 @@ public class Sintatico implements Isintatico
 	public void derivaAtrib()
 	{
 		// TODO: verificar se ID existe
+		if(!tabelaSimbolos.getIdTokens().get(token.getLexema()))
+		{
+			tokenErro(false);
+		}
 		
 		nextToken();
 		// assign
@@ -399,14 +405,18 @@ public class Sintatico implements Isintatico
 	public void derivaFNUMInt()
 	{
 		nextToken();
-		if(firstFollow.getFirst().get("opnum").contains(token.getTokenType()))
-		{
+		if(firstFollow.getFirst().get("fnumint").contains(token.getTokenType()))
+		{					
 			// Deriva OPNUM
 			derivaOPnum();
 			
 			// Deriva FOPNUM_1
 			derivaFOPNum1();
-		}				
+		}
+		else
+		{
+			gerarError(firstFollow.getFirst().get("fnumint"));
+		}
 	}
 
 	@Override
@@ -484,11 +494,14 @@ public class Sintatico implements Isintatico
 	@Override
 	public void derivaFLPar()
 	{
-		// Deriva EXPNUM
-		derivaEXPNum();		
-		
-		// Deriva FEXPNUM
-		derivaFEXPNum();
+		if(firstFollow.getFirst().get("flpar").contains(token.getTokenType()))
+		{			
+			// Deriva EXPNUM
+			derivaEXPNum();		
+			
+			// Deriva FEXPNUM
+			derivaFEXPNum();			
+		}
 	}
 
 	@Override
@@ -592,8 +605,11 @@ public class Sintatico implements Isintatico
 	@Override
 	public void derivaOPnum()
 	{
-		nextToken();
-		if(!firstFollow.getFirst().get("opnum").contains(token.getTokenType()))
+		if(firstFollow.getFirst().get("opnum").contains(token.getTokenType()))
+		{
+			nextToken();
+		}
+		else
 		{
 			gerarError(firstFollow.getFirst().get("opnum"));
 		}
@@ -836,5 +852,19 @@ public class Sintatico implements Isintatico
 		}
 		while(!tokenEsperado.contains(token.getTokenType()) && !token.getTokenType().equals(TokenType.EOF));
 
+	}
+	
+	private void tokenErro(boolean declarado) {
+		if(declarado)
+		{
+			System.out.println("ID -> '" + token.getLexema() + "' já foi declarado!");
+		}
+		else
+		{
+			System.out.println("ID -> '" + token.getLexema() + "' não foi declarado!");
+		}
+		
+		Error error = new Error(ErrorType.SINTATICO, token.getLexema(), token.getLinha(), token.getColuna());
+		errorH.registrarErro(error);		
 	}
 }
