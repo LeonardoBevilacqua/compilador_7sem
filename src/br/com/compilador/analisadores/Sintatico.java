@@ -280,7 +280,6 @@ public class Sintatico implements Isintatico
 	@Override
 	public void derivaAtrib()
 	{
-		// TODO: verificar se ID existe
 		if(!tabelaSimbolos.getIdTokens().get(token.getLexema()))
 		{
 			tokenErro(false);
