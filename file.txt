@@ -12,8 +12,8 @@ program file;
 				status <- "Maior de idade";
 			end
 		else
-			
-				status <- "Maior de idade";
-			
+			begin
+				status <- "Menos de idade";
+			end
 	end
 end_prog;
