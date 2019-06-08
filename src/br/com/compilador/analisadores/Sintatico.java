@@ -149,6 +149,7 @@ public class Sintatico implements Isintatico
 			}			
 		}		
 		
+		
 		// $
 		if(token.getTokenType().equals(TokenType.EOF))
 		{
@@ -158,8 +159,12 @@ public class Sintatico implements Isintatico
 		else if(!token.getTokenType().equals(TokenType.END)) 
 		{
 			derivaCmds();
-		}		
-		lexico.saveBuffer(token);
+		}
+		else
+		{
+			lexico.saveBuffer(token);	
+		}
+		
 	}
 
 	@Override
@@ -259,6 +264,7 @@ public class Sintatico implements Isintatico
 		
 		// Deriva CNDB
 		derivaCndb();		
+		nextToken();
 	}	
 
 	@Override
